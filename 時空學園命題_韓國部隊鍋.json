@@ -1,0 +1,214 @@
+{
+  "part1": {
+    "missionTitle": "韓國部隊鍋",
+    "mainSubject": "歷史",
+    "otherSubjects": [],
+    "curriculumGuidelines": "歷Ib-Ⅴ-2共產主義在東亞的發展歷程及對局勢的影響。",
+    "gradeLevel": "10",
+    "semesterLevel": "D",
+    "location": "東亞",
+    "century": "20世紀"
+  },
+  "part2": {
+    "keyphrases": [
+      {
+        "original": "韓戰",
+        "category": "某場戰役",
+        "color": "var(--answer-red)"
+      },
+      {
+        "original": "美國",
+        "category": "某國",
+        "color": "var(--answer-green)"
+      },
+      {
+        "original": "家喻戶曉",
+        "category": "某句成語",
+        "color": "var(--answer-blue)"
+      },
+      {
+        "original": "鈉",
+        "category": "某種元素",
+        "color": "var(--answer-purple)"
+      }
+    ],
+    "clueTextHtml": "韓國部隊鍋起源於1950年代<span class=\"highlight color-0\">[[$某場戰役]]</span>結束後。當時，由於物資匱乏，駐紮在韓國的<span class=\"highlight color-1\">[[$某國]]</span>軍隊帶來香腸、午餐肉、焗豆等罐頭食品，經當地居民把這些食材與韓國傳統的泡菜、辣椒醬混煮成一鍋辛辣濃郁的湯，別具風味。如今的部隊鍋則又加入了泡麵、起司等食材，口味豐富，知名程度稱得上是<span class=\"highlight color-2\">[[$某句成語]]</span>的寫照。但要注意的是：部隊鍋因為添加了許多加工食品，可能會有<span class=\"highlight color-3\">[[$某種元素]]</span>攝取過多的問題，喜歡這道美食的人仍要適量。",
+    "originalText": "韓國部隊鍋起源於1950年代韓戰結束後。當時，由於物資匱乏，駐紮在韓國的美國軍隊帶來香腸、午餐肉、焗豆等罐頭食品，經當地居民把這些食材與韓國傳統的泡菜、辣椒醬混煮成一鍋辛辣濃郁的湯，別具風味。如今的部隊鍋則又加入了泡麵、起司等食材，口味豐富，知名程度稱得上是家喻戶曉的寫照。但要注意的是：部隊鍋因為添加了許多加工食品，可能會有鈉攝取過多的問題，喜歡這道美食的人仍要適量。"
+  },
+  "part3": {
+    "韓戰": {
+      "explanation": "韓戰發生於1950至1953年，是朝鮮半島的軍事衝突，涉及美蘇冷戰對抗。\n",
+      "hint1_textContent": "冷戰時期發生在朝鮮戰爭\n",
+      "hint2_knowledgeCardScaffold": "戰爭起因於共產勢力擴張至朝鮮半島南部。\n",
+      "hint3_overallScaffold": "這是冷戰初期發生在東亞的戰役。\n"
+    },
+    "美國": {
+      "explanation": "韓戰結束後，美國為防止北韓侵略而駐軍在韓國，加強對抗共產勢力擴張，同時也將飲食文化與生活習慣帶進韓國。\n",
+      "hint1_textContent": "世界面積第四大的國家\n",
+      "hint2_knowledgeCardScaffold": "積極成立區域安全組織對抗共產勢力的國家。\n",
+      "hint3_overallScaffold": "這個國家在戰後派軍駐紮韓國。\n"
+    },
+    "家喻戶曉": {
+      "explanation": "家喻戶曉：家喻戶曉原作戶告人曉，意為告訴家家戶戶知曉，形容事情與名聲傳播極廣。\n",
+      "hint1_textContent": "形容事情與名聲傳播極廣\n",
+      "hint2_knowledgeCardScaffold": "原意是告訴家家戶戶知曉。\n",
+      "hint3_overallScaffold": "這句成語用來形容事情或名聲傳布極廣。\n"
+    },
+    "鈉": {
+      "explanation": "鈉（Na）具有調節細胞外液容積與滲透壓、維持酸鹼平衡、協助神經衝動傳遞、肌肉收縮及幫助葡萄糖和胺基酸吸收等功能，常以食鹽的形式出現在多數食品中，攝取過量，會增加高血壓和中風的風險。\n",
+      "hint1_textContent": "濃度過高會導致極度口渴\n",
+      "hint2_knowledgeCardScaffold": "食鹽裡存在的化學元素。\n",
+      "hint3_overallScaffold": "常以氯化鈉（食鹽）的形式出現在多數食品。\n"
+    }
+  },
+  "part4": {
+    "韓戰": {
+      "correctCard": {
+        "cardName": "韓戰",
+        "imageUrl": "",
+        "category": "事件卡",
+        "textContent": "冷戰時期發生在朝鮮戰爭\n",
+        "externalInfo": "",
+        "clueDescription": "某場戰役",
+        "scaffoldingHint": "戰爭起因於共產勢力擴張至朝鮮半島南部。\n"
+      },
+      "incorrectCards": [
+        {
+          "cardName": "越戰",
+          "imageUrl": "",
+          "category": "事件卡",
+          "textContent": "冷戰時期發生在越南的戰爭",
+          "externalInfo": "",
+          "clueDescription": "某場戰役"
+        },
+        {
+          "cardName": "第一次世界大戰",
+          "imageUrl": "",
+          "category": "事件卡",
+          "textContent": "發生於二十世紀前期的大戰",
+          "externalInfo": "",
+          "clueDescription": "某場戰役"
+        },
+        {
+          "cardName": "第二次世界大戰",
+          "imageUrl": "",
+          "category": "事件卡",
+          "textContent": "發生於二十世紀前期的大戰",
+          "externalInfo": "",
+          "clueDescription": "某場戰役"
+        }
+      ]
+    },
+    "美國": {
+      "correctCard": {
+        "cardName": "美國",
+        "imageUrl": "",
+        "category": "事件卡",
+        "textContent": "世界面積第四大的國家\n",
+        "externalInfo": "",
+        "clueDescription": "某國",
+        "scaffoldingHint": "積極成立區域安全組織對抗共產勢力的國家。\n"
+      },
+      "incorrectCards": [
+        {
+          "cardName": "北韓",
+          "imageUrl": "",
+          "category": "地點卡",
+          "textContent": "位於東亞的共產國家",
+          "externalInfo": "",
+          "clueDescription": "某國"
+        },
+        {
+          "cardName": "日本",
+          "imageUrl": "",
+          "category": "地點卡",
+          "textContent": "位於東亞的島嶼國家",
+          "externalInfo": "",
+          "clueDescription": "某國"
+        },
+        {
+          "cardName": "越南",
+          "imageUrl": "",
+          "category": "地點卡",
+          "textContent": "位於東南亞的共產國家",
+          "externalInfo": "",
+          "clueDescription": "某國"
+        }
+      ]
+    },
+    "家喻戶曉": {
+      "correctCard": {
+        "cardName": "家喻戶曉",
+        "imageUrl": "",
+        "category": "語文卡",
+        "textContent": "形容事情與名聲傳播極廣\n",
+        "externalInfo": "",
+        "clueDescription": "某句成語",
+        "scaffoldingHint": "原意是告訴家家戶戶知曉。\n"
+      },
+      "incorrectCards": [
+        {
+          "cardName": "入木三分",
+          "imageUrl": "",
+          "category": "語文卡",
+          "textContent": "形容筆力遒勁",
+          "externalInfo": "",
+          "clueDescription": "某句成語"
+        },
+        {
+          "cardName": "浩浩湯湯",
+          "imageUrl": "",
+          "category": "語文卡",
+          "textContent": "水勢盛大壯闊的樣子",
+          "externalInfo": "",
+          "clueDescription": "某句成語"
+        },
+        {
+          "cardName": "車水馬龍",
+          "imageUrl": "",
+          "category": "語文卡",
+          "textContent": "車馬絡繹不絕的熱鬧景象",
+          "externalInfo": "",
+          "clueDescription": "某句成語"
+        }
+      ]
+    },
+    "鈉": {
+      "correctCard": {
+        "cardName": "鈉",
+        "imageUrl": "",
+        "category": "物件卡",
+        "textContent": "濃度過高會導致極度口渴\n",
+        "externalInfo": "",
+        "clueDescription": "某種元素",
+        "scaffoldingHint": "食鹽裡存在的化學元素。\n"
+      },
+      "incorrectCards": [
+        {
+          "cardName": "砷",
+          "imageUrl": "",
+          "category": "物件卡",
+          "textContent": "被視為重金屬中毒的元素",
+          "externalInfo": "",
+          "clueDescription": "某種元素"
+        },
+        {
+          "cardName": "鎘",
+          "imageUrl": "",
+          "category": "物件卡",
+          "textContent": "引發痛痛病的可致癌物",
+          "externalInfo": "",
+          "clueDescription": "某種元素"
+        },
+        {
+          "cardName": "汞",
+          "imageUrl": "",
+          "category": "物件卡",
+          "textContent": "導致水俁病的元素",
+          "externalInfo": "",
+          "clueDescription": "某種元素"
+        }
+      ]
+    }
+  }
+}

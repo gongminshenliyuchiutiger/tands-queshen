@@ -1,0 +1,2176 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>時空學園命題設計引導系統</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Google Fonts for Star Wars style -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Exo+2:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Bright, Colorful, Tech-Streamlined Star Wars Theme - Optimized for 4 Key Colors */
+        :root {
+            /* Base Colors - Bright & Clean */
+            --bg-light: rgb(235, 245, 255); /* 淺藍白背景 */
+            --container-bg: rgba(255, 255, 255, 0.9); /* 半透明白色容器 */
+            --text-dark: rgb(30, 30, 30); /* 主要深色文字 */
+            --text-medium: rgb(60, 60, 60); /* 中度深色文字 */
+            --border-light: rgb(200, 220, 240); /* 淺色邊框 */
+            --text-black: rgb(0, 0, 0); /* 純黑色文字 */
+
+            /* Primary UI Accent Colors (avoiding answer colors) */
+            --primary-ui-blue: rgb(0, 160, 255); /* 主介面藍色 */
+            --ui-success-green: rgb(100, 255, 100); /* UI成功綠 (非答案綠) */
+            --ui-error-red: rgb(255, 100, 100); /* UI錯誤紅 (非答案紅) */
+            --accent-yellow: rgb(255, 220, 0); /* 鮮豔黃色 (Back按鈕, 吉祥物) */
+            --incorrect-card-gray: rgb(200, 200, 200); /* 錯誤知識卡灰色 */
+
+
+            /* Specific Answer Colors (Red, Green, Blue, Purple) - No Glow */
+            --answer-red: rgb(255, 60, 60);
+            --answer-green: rgb(60, 200, 60);
+            --answer-blue: rgb(60, 60, 255);
+            --answer-purple: rgb(150, 60, 255);
+
+            /* Glow Effects - For UI elements ONLY, NOT for answer colors */
+            --glow-h1-orange: 0 0 8px rgb(255, 120, 0), 0 0 15px rgba(255, 120, 0, 0.4); /* H1專用橘光 */
+            --glow-h2-blue: 0 0 8px var(--primary-ui-blue), 0 0 15px rgba(0, 160, 255, 0.4); /* H2專用藍光 */
+            --neon-glow-yellow: 0 0 8px var(--accent-yellow), 0 0 15px rgba(255, 220, 0, 0.4); /* Accent Yellow (Back button, Mascot) */
+            --neon-glow-primary-ui-blue: 0 0 8px var(--primary-ui-blue), 0 0 15px rgba(0, 160, 255, 0.4); /* Primary UI Blue */
+            --neon-glow-ui-success-green: 0 0 8px var(--ui-success-green), 0 0 15px rgba(100, 255, 100, 0.4); /* UI Success Green */
+            --neon-glow-ui-error-red: 0 0 8px var(--ui-error-red), 0 0 15px rgba(255, 100, 100, 0.4); /* UI Error Red */
+            
+            --neon-glow-white-subtle: 0 0 5px rgba(255, 255, 255, 0.7); /* 淺色背景下的文字白光 */
+            
+            /* Helper for RGBA conversion in CSS variables */
+            --primary-ui-blue-rgb: 0, 160, 255;
+            --ui-error-red-rgb: 255, 100, 100;
+            --ui-success-green-rgb: 100, 255, 100;
+            --accent-yellow-rgb: 255, 220, 0;
+            --incorrect-card-gray-rgb: 200, 200, 200;
+
+            --container-bg-rgb: 255, 255, 255; /* For rgba calculations with opacity */
+            --text-dark-rgb: 30, 30, 30;
+            --border-light-rgb: 200, 220, 240;
+        }
+
+        /* Particles.js Container (no background color here, let body define it) */
+        #tsparticles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        body {
+            font-family: 'Exo 2', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--bg-light); /* 淺藍白背景 */
+            color: var(--text-dark); /* 深色內文 */
+            padding-bottom: 80px;
+            overflow-x: hidden;
+            background-image: linear-gradient(135deg, var(--bg-light) 0%, rgb(220, 235, 255) 100%); /* 輕微漸變 */
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 20px auto;
+            background: var(--container-bg); /* 半透明白色背景 */
+            padding: 30px;
+            border-radius: 12px; /* 更圓潤的科技感 */
+            box-shadow: 0 0 20px rgba(var(--primary-ui-blue-rgb), 0.3), 0 0 30px rgba(0, 0, 0, 0.05); /* 輕微藍光和淺陰影 */
+            border: 1px solid var(--primary-ui-blue); /* 科技藍色邊框 */
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Orbitron', sans-serif;
+            border-bottom: 2px solid var(--border-light); /* 清爽淺色線條 */
+            padding-bottom: 10px;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            text-shadow: none; /* 預設不發光，由各自的 h 標籤定義 */
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            color: var(--text-black); /* 黑色字 */
+            border-bottom: 3px solid var(--accent-yellow); /* 沿用黃色線 */
+            text-shadow: var(--glow-h1-orange); /* 橘色發光 */
+        }
+
+        h2 {
+            font-size: 1.8em;
+            color: var(--text-black); /* 黑色字 */
+            text-shadow: var(--glow-h2-blue); /* 藍色發光 */
+            border-bottom-color: var(--primary-ui-blue);
+        }
+
+        h3 { /* 默認的 h3 樣式，會被後面的特定 h3 覆蓋 */
+            font-size: 1.4em;
+            color: var(--text-dark); /* 默認深色文字 */
+            text-shadow: none; /* 默認無發光 */
+            border-bottom-color: var(--border-light); /* 默認淺色線 */
+        }
+        h4 {
+            color: var(--text-dark); /* 知識卡標題等 */
+            text-shadow: var(--neon-glow-white-subtle); /* 輕微白光 */
+            border-bottom-color: var(--border-light);
+        }
+
+        p {
+            margin-bottom: 15px;
+            color: var(--text-dark); /* 深色內文 */
+        }
+
+        /* 表單元素樣式 */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--text-dark); /* 標籤顏色 */
+            text-shadow: none;
+        }
+
+        input[type="text"],
+        input[type="url"],
+        input[type="file"],
+        textarea,
+        select {
+            width: calc(100% - 22px);
+            padding: 12px;
+            border: 1px solid var(--border-light);
+            border-radius: 8px; /* 更圓潤的邊角 */
+            box-sizing: border-box;
+            font-size: 1em;
+            background-color: rgb(245, 248, 252); /* 淺色背景 */
+            color: var(--text-dark); /* 輸入文字顏色 */
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); /* 輕微內陰影 */
+        }
+        input[type="file"] {
+            padding: 7px 10px;
+            background-color: var(--bg-light); /* 檔案輸入框背景更淺 */
+        }
+        input[type="checkbox"] {
+            accent-color: var(--primary-ui-blue); /* 設置勾選顏色 */
+        }
+        input[type="checkbox"] + label {
+            color: var(--text-dark); /* 復選框標籤顏色 */
+        }
+
+        input[type="text"]:focus,
+        input[type="url"]:focus,
+        textarea:focus,
+        select:focus {
+            border-color: var(--primary-ui-blue);
+            box-shadow: 0 0 8px rgba(var(--primary-ui-blue-rgb), 0.6);
+            outline: none;
+            background-color: white; /* 焦點時背景變白 */
+        }
+        
+        /* Part 3 目標答案的顏色 (紅、綠、藍、紫，無發光) */
+        #answersAndHintsForms input[type="text"][readonly] {
+            font-weight: bold;
+            background-color: rgb(240, 240, 240); /* 淺灰色背景 */
+            text-shadow: none; /* 無發光 */
+            border-color: var(--border-light);
+        }
+        /* 針對不同顏色的目標答案 - 使用答案專屬顏色，無發光 */
+        #answersAndHintsForms input[type="text"][readonly].color-0 { color: var(--answer-red); }
+        #answersAndHintsForms input[type="text"][readonly].color-1 { color: var(--answer-green); }
+        #answersAndHintsForms input[type="text"][readonly].color-2 { color: var(--answer-blue); }
+        #answersAndHintsForms input[type="text"][readonly].color-3 { color: var(--answer-purple); }
+
+        /* Part 4 卡片名稱文字 (紅、綠、藍、紫，無發光) */
+        #knowledgeCardSets input[type="text"].color-0 { color: var(--answer-red); text-shadow: none; }
+        #knowledgeCardSets input[type="text"].color-1 { color: var(--answer-green); text-shadow: none; }
+        #knowledgeCardSets input[type="text"].color-2 { color: var(--answer-blue); text-shadow: none; }
+        #knowledgeCardSets input[type="text"].color-3 { color: var(--answer-purple); text-shadow: none; }
+
+
+        .select-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .select-group select {
+            width: auto;
+            flex-grow: 1;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .word-count {
+            font-size: 0.8em;
+            color: var(--text-medium); /* 字數計數器顏色 */
+            text-align: right;
+            margin-top: 5px;
+        }
+
+        /* 按鈕樣式 */
+        .button-group {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+            gap: 12px; /* 增加按鈕間距 */
+        }
+
+        button {
+            background-color: var(--primary-ui-blue);
+            color: white;
+            padding: 12px 22px; /* 稍微加大按鈕 */
+            border: none;
+            border-radius: 8px; /* 圓潤邊角 */
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: var(--neon-glow-primary-ui-blue); /* 霓虹藍光 */
+        }
+        button i {
+            margin-right: 5px;
+        }
+
+        button:hover {
+            background-color: rgb(0, 130, 200); /* hover時顏色變深 */
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(var(--primary-ui-blue-rgb), 0.8), 0 0 25px rgba(var(--primary-ui-blue-rgb), 0.4); /* 更強烈的藍光 */
+        }
+
+        button:active {
+            transform: translateY(0);
+            box-shadow: var(--neon-glow-primary-ui-blue);
+        }
+
+        button.secondary {
+            background-color: var(--border-light);
+            box-shadow: 0 0 8px rgba(var(--border-light-rgb), 0.4);
+            color: var(--text-dark);
+        }
+
+        button.secondary:hover {
+            background-color: rgb(180, 200, 220);
+            box-shadow: 0 0 15px rgba(var(--border-light-rgb), 0.8);
+        }
+
+        button.danger {
+            background-color: var(--ui-error-red); /* UI錯誤紅 */
+            box-shadow: var(--neon-glow-ui-error-red);
+        }
+
+        button.danger:hover {
+            background-color: rgb(200, 70, 70);
+            box-shadow: 0 0 15px rgba(var(--ui-error-red-rgb), 0.8), 0 0 25px rgba(var(--ui-error-red-rgb), 0.4);
+        }
+
+        button.back {
+            background-color: var(--accent-yellow); /* 鮮豔黃色按鈕 */
+            color: var(--text-dark);
+            box-shadow: var(--neon-glow-yellow);
+        }
+        button.back:hover {
+            background-color: rgb(220, 190, 0);
+            box-shadow: 0 0 15px rgba(var(--accent-yellow-rgb), 0.8), 0 0 25px rgba(var(--accent-yellow-rgb), 0.4);
+        }
+
+        button:disabled {
+            background-color: rgb(200, 200, 200);
+            cursor: not-allowed;
+            box-shadow: none;
+            color: rgb(150, 150, 150);
+        }
+
+        /* 表格樣式 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: hidden; /* 確保圓角生效 */
+        }
+
+        th, td {
+            border: 1px solid var(--border-light);
+            padding: 14px; /* 稍微加大內邊距 */
+            text-align: left;
+            color: var(--text-dark); /* 表格文字顏色 */
+        }
+
+        th {
+            background-color: rgb(220, 230, 240); /* 淺色標頭背景 */
+            font-weight: bold;
+            color: var(--primary-ui-blue); /* 表格標頭文字顏色 */
+            text-shadow: var(--neon-glow-white-subtle);
+        }
+
+        tr:nth-child(even) {
+            background-color: rgba(var(--border-light-rgb), 0.2); /* 淺色條紋背景 */
+        }
+
+        /* Part 2 關鍵詞定義表格的顏色循環 */
+        #keyphraseCategoryTable tbody tr input { border-left: 5px solid; padding-left: 5px; } /* 預設邊框，實際顏色由 JS 動態設定 */
+
+        /* 預覽區塊 */
+        .preview-box {
+            background-color: rgba(var(--container-bg-rgb), 0.8); /* 淺色半透明背景 */
+            border: 1px dashed var(--primary-ui-blue);
+            padding: 18px; /* 稍微加大內邊距 */
+            border-radius: 8px;
+            margin-top: 15px;
+            white-space: pre-wrap;
+            color: var(--text-dark); /* 預覽文字顏色 */
+            box-shadow: 0 0 10px rgba(var(--primary-ui-blue-rgb), 0.1);
+        }
+
+        .highlight {
+            padding: 2px 5px; /* 稍微加大內邊距 */
+            border-radius: 5px; /* 更圓潤 */
+            font-weight: bold;
+            background-color: rgba(var(--primary-ui-blue-rgb), 0.1); /* 淺藍色背景，稍微透明 */
+            text-shadow: none; /* 高亮文本無發光 */
+        }
+        /* 針對不同顏色的高亮，覆蓋顏色部分 - 使用答案專屬顏色，無發光 */
+        .highlight.color-0 { color: var(--answer-red); }
+        .highlight.color-1 { color: var(--answer-green); }
+        .highlight.color-2 { color: var(--answer-blue); }
+        .highlight.color-3 { color: var(--answer-purple); }
+
+
+        /* 知識卡樣式 */
+        .knowledge-card {
+            border: 1px solid var(--border-light);
+            padding: 25px; /* 加大內邊距 */
+            margin-bottom: 25px;
+            border-radius: 10px;
+            background-color: rgba(var(--container-bg-rgb), 0.8); /* 淺色半透明背景 */
+            box-shadow: 0 0 10px rgba(var(--border-light-rgb), 0.2);
+        }
+
+        .knowledge-card.correct {
+            border-color: var(--ui-success-green); /* UI成功綠 */
+            background-color: rgba(var(--ui-success-green-rgb), 0.08); /* 更淺的綠色背景 */
+            box-shadow: 0 0 10px rgba(var(--ui-success-green-rgb), 0.4), 0 0 20px rgba(var(--ui-success-green-rgb), 0.1);
+        }
+
+        .knowledge-card.incorrect {
+            border-color: var(--incorrect-card-gray); /* 錯誤卡灰色 */
+            background-color: rgba(var(--incorrect-card-gray-rgb), 0.2); /* 更淺的灰色背景 */
+            box-shadow: 0 0 8px rgba(var(--incorrect-card-gray-rgb), 0.6), 0 0 15px rgba(var(--incorrect-card-gray-rgb), 0.2);
+        }
+
+        /* Part 3 關鍵詞標題顏色 (紅、綠、藍、紫，無發光) */
+        #answersAndHintsForms .knowledge-card h3 {
+            font-family: 'Orbitron', sans-serif;
+            border-bottom: none; /* 移除藍線 */
+            text-shadow: none; /* 無發光 */
+        }
+        /* 為 Part 3 的 h3 應用答案顏色 */
+        #answersAndHintsForms .knowledge-card h3.color-0 { color: var(--answer-red); }
+        #answersAndHintsForms .knowledge-card h3.color-1 { color: var(--answer-green); }
+        #answersAndHintsForms .knowledge-card h3.color-2 { color: var(--answer-blue); }
+        #answersAndHintsForms .knowledge-card h3.color-3 { color: var(--answer-purple); }
+
+
+        /* Part 4 知識卡組標題顏色 (紅、綠、藍、紫，無發光) */
+        #knowledgeCardSets .card-set-for-keyphrase h3 {
+            font-family: 'Orbitron', sans-serif;
+            border-bottom: 2px solid var(--primary-ui-blue); /* 藍色線條 */
+            text-shadow: none; /* 無發光 */
+        }
+        /* 為 Part 4 的 h3 應用答案顏色 */
+        #knowledgeCardSets .card-set-for-keyphrase h3.color-0 { color: var(--answer-red); }
+        #knowledgeCardSets .card-set-for-keyphrase h3.color-1 { color: var(--answer-green); }
+        #knowledgeCardSets .card-set-for-keyphrase h3.color-2 { color: var(--answer-blue); }
+        #knowledgeCardSets .card-set-for-keyphrase h3.color-3 { color: var(--answer-purple); }
+
+
+        .knowledge-card h4 {
+            color: var(--text-dark); /* 知識卡標題等 */
+            margin-top: 0;
+            border-bottom: 1px solid var(--border-light);
+            padding-bottom: 8px;
+            text-shadow: var(--neon-glow-white-subtle);
+        }
+        .knowledge-card.incorrect h4 {
+            color: var(--text-dark);
+            border-bottom: 1px solid var(--incorrect-card-gray); /* 錯誤卡標題線條也用灰色 */
+        }
+        .knowledge-card h5 {
+            color: var(--text-dark);
+            text-shadow: var(--neon-glow-white-subtle);
+            margin-top: 0;
+            border-bottom: 1px dashed var(--border-light); /* 虛線分隔 */
+            padding-bottom: 5px;
+        }
+
+        .image-preview {
+            max-width: 150px;
+            max-height: 150px;
+            margin-top: 10px;
+            border: 1px solid var(--primary-ui-blue);
+            display: block;
+            object-fit: contain;
+            background-color: rgba(255,255,255,0.5);
+            border-radius: 5px;
+            box-shadow: 0 0 8px rgba(var(--primary-ui-blue-rgb), 0.2);
+        }
+
+        /* 總結區塊 */
+        .summary-section {
+            background-color: rgba(var(--primary-ui-blue-rgb), 0.08);
+            border: 1px solid var(--primary-ui-blue);
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 30px;
+            box-shadow: 0 0 10px rgba(var(--primary-ui-blue-rgb), 0.4), 0 0 20px rgba(var(--primary-ui-blue-rgb), 0.1);
+        }
+
+        .summary-section h3 {
+            color: var(--primary-ui-blue);
+            text-shadow: var(--neon-glow-primary-ui-blue);
+        }
+
+        .summary-content pre {
+            background-color: rgb(240, 245, 250); /* 淺色代碼背景 */
+            border: 1px solid var(--border-light);
+            padding: 18px;
+            border-radius: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+            color: var(--text-dark); /* 總結預覽JSON文字顏色 */
+            text-shadow: var(--neon-glow-white-subtle);
+        }
+
+        /* 版權和吉祥物 */
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 45px; /* 稍微增加高度 */
+            background-color: rgb(220, 230, 240); /* 淺灰色背景 */
+            color: var(--text-medium);
+            padding: 5px 20px;
+            text-align: center;
+            font-size: 0.9em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        .footer span {
+            color: var(--text-medium);
+        }
+
+
+        .mascot-wrapper {
+            position: fixed;
+            left: 20px;
+            bottom: 20px;
+            z-index: 1001;
+            cursor: pointer;
+            transition: filter 0.3s ease;
+            filter: drop-shadow(0 0 0 rgba(var(--accent-yellow-rgb), 0));
+        }
+        .mascot-wrapper:hover {
+            filter: drop-shadow(0 0 15px rgba(var(--accent-yellow-rgb), 0.8)) drop-shadow(0 0 30px rgba(var(--accent-yellow-rgb), 0.4));
+        }
+
+        .mascot-image {
+            height: calc(50px * 3);
+            width: auto;
+            object-fit: contain;
+            display: block;
+        }
+        
+        .footer .left-content, .footer .right-content {
+            flex-basis: 150px;
+        }
+        .footer .center-content {
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        /* 自定義輸入框的樣式，如果選擇了「其他」 */
+        .custom-input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 5px;
+        }
+        .custom-input-group input[type="text"] {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <!-- Particles.js Container -->
+    <div id="tsparticles"></div>
+
+    <div class="container">
+        <h1><i class="fas fa-galaxy"></i> 時空學園命題設計引導系統</h1>
+        <p>歡迎來到時空學園命題設計引導系統！本系統將帶您一步步了解如何為「時空學園」遊戲設計引人入勝且具備教育意義的題目。我們的核心策略是「<strong>多層次逐步揭示資訊</strong>」，透過循序漸進的提示，引導學生思考、學習，並最終掌握知識。</p>
+
+        <section id="part1">
+            <h2><i class="fas fa-globe"></i> Part 1: 基礎任務設定</h2>
+            <p>在開始設計具體的題目內容前，請先填寫本次命題的整體資訊。</p>
+
+            <div class="form-group">
+                <label for="missionTitle"><i class="fas fa-terminal"></i> 1. 任務名稱 (Mission Title)</label>
+                <input type="text" id="missionTitle" value="" required>
+            </div>
+
+            <div class="form-group">
+                <label for="mainSubject"><i class="fas fa-book-sparkles"></i> 2. 主要學科 (Main Subject)</label>
+                <select id="mainSubject" required>
+                    <option value="" selected>請選擇</option>
+                    <option value="國語">國語</option>
+                    <option value="英語">英語</option>
+                    <option value="數學">數學</option>
+                    <option value="自然">自然</option>
+                    <option value="社會">社會</option>
+                    <option value="國文">國文</option>
+                    <option value="英文">英文</option>
+                    <option value="理化">理化</option>
+                    <option value="生物">生物</option>
+                    <option value="地科">地科</option>
+                    <option value="歷史">歷史</option>
+                    <option value="地理">地理</option>
+                    <option value="公民">公民</option>
+                    <option value="其他">其他 (請輸入)</option>
+                </select>
+                <div id="customMainSubjectInputGroup" class="custom-input-group" style="display: none;">
+                    <input type="text" id="customMainSubject" placeholder="請輸入主學科名稱">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-layer-group"></i> 3. 其他學科 (Other Subjects)</label>
+                <div id="otherSubjectsCheckboxes">
+                    <!-- 動態生成其他學科選項 -->
+                </div>
+                <div id="customOtherSubjectInputGroup" class="custom-input-group" style="display: none;">
+                    <input type="text" id="customOtherSubject" placeholder="請輸入其他學科名稱 (多個請用逗號分隔)">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="curriculumGuidelines"><i class="fas fa-scroll"></i> 4. 課綱 (Curriculum Guidelines)</label>
+                <input type="text" id="curriculumGuidelines" value="">
+            </div>
+
+            <div class="form-group">
+                <label><i class="fas fa-starfighter-alt"></i> 5. 等級 (Difficulty Level)</label>
+                <div class="select-group">
+                    <select id="gradeLevel" required>
+                        <option value="" selected>選擇年級</option>
+                        <script>
+                            for(let i=1; i<=12; i++) {
+                                document.write(`<option value="${i}">${i}</option>`);
+                            }
+                        </script>
+                    </select>
+                    <select id="semesterLevel" required>
+                        <option value="" selected>選擇學期/階段</option>
+                        <option value="A">A (上學期前半)</option>
+                        <option value="B">B (上學期後半)</option>
+                        <option value="C">C (下學期前半)</option>
+                        <option value="D">D (下學期後半)</option>
+                    </select>
+                </div>
+                <small>(數字為12年國教個個年段，A、B與C、D代表上學期前半、後半及下學期前半、後半)</small>
+            </div>
+
+            <div class="form-group">
+                <label for="location"><i class="fas fa-map-marked-alt"></i> 6. 地點 (Location)</label>
+                <input type="text" id="location" value="">
+            </div>
+
+            <div class="form-group">
+                <label for="century"><i class="fas fa-history"></i> 7. 世紀 (Century)</label>
+                <input type="text" id="century" value="">
+            </div>
+            <div class="button-group">
+                <button type="button" id="proceedToPart2" disabled><i class="fas fa-arrow-right"></i> 前往 Part 2: 線索文本轉換</button>
+            </div>
+            <div class="form-group" style="margin-top: 20px;">
+                <label for="importJsonFile_Part1"><i class="fas fa-file-import"></i> 匯入 JSON 數據 (用於編輯現有檔案)</label>
+                <input type="file" id="importJsonFile_Part1" accept=".json">
+                <button type="button" id="importJsonBtn_Part1" class="secondary"><i class="fas fa-upload"></i> 載入 JSON</button>
+                <button type="button" id="exportJsonBtn_Part1" class="secondary"><i class="fas fa-download"></i> 匯出 JSON</button>
+            </div>
+        </section>
+
+        <section id="part2" style="display: none;">
+            <h2><i class="fas fa-file-invoice"></i> Part 2: 線索文本轉換 (Source Text Transformation)</h2>
+            <p>這一階段的目標是將原始文章轉化為遊戲中會呈現給玩家的「線索文本」。我們將從原始文章中找出關鍵字詞，並將其替換為通用性的「變數」，作為玩家需要猜測的謎題。</p>
+
+            <h3>目標</h3>
+            <p>從原始文章中找出關鍵的、需要被學習或猜測的字詞，並將其替換為通用性的「變數」。</p>
+
+            <h3>步驟</h3>
+            <div class="form-group">
+                <label for="originalText"><i class="fas fa-keyboard"></i> 1. 輸入原始線索文本 (文稿)</label>
+                <textarea id="originalText" placeholder="請將您預計用於題目的原始文章內容貼入此處。" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="keyphrasesInput"><i class="fas fa-bullseye"></i> 2. 找出關鍵字詞並替換為變數</label>
+                <textarea id="keyphrasesInput" placeholder="每行輸入一個關鍵詞，例如：&#10;韓戰&#10;美國&#10;家喻戶曉&#10;鈉" rows="5"></textarea>
+                <div class="word-count" id="keyphrasesInput_counter">0/無限制 字</div>
+                <button type="button" id="generateKeyphraseCategories" disabled><i class="fas fa-cogs"></i> 確認關鍵詞並定義類別</button>
+            </div>
+
+            <div id="keyphraseCategorySection" style="display: none;">
+                <h3><i class="fas fa-tags"></i> 3. 定義關鍵詞的「類別」變數</h3>
+                <p>為每個選出的關鍵詞定義一個通用性的「類別」變數。這將用於生成<code>[[$某類]]</code>的格式。</p>
+                <table id="keyphraseCategoryTable">
+                    <thead>
+                        <tr>
+                            <th>關鍵詞</th>
+                            <th>變數類別 (例如：某場戰役)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- 動態生成行 -->
+                    </tbody>
+                </table>
+                <button type="button" id="generateClueText" disabled><i class="fas fa-magic"></i> 生成線索文本預覽</button>
+            </div>
+
+            <div id="clueTextPreviewSection" style="display: none;">
+                <h3><i class="fas fa-eye"></i> 4. 生成線索文本 (後臺) 預覽</h3>
+                <p>這就是玩家在遊戲中會看到的線索文本，但其中關鍵詞已被隱藏。</p>
+                <div class="preview-box" id="clueTextPreview"></div>
+            </div>
+            <div class="button-group">
+                <button type="button" class="back" onclick="goToPart(1)"><i class="fas fa-undo"></i> 返回 Part 1</button>
+                <button type="button" id="proceedToPart3" disabled><i class="fas fa-arrow-right"></i> 前往 Part 3: 設計答案與提示</button>
+            </div>
+            <div class="form-group" style="margin-top: 20px;">
+                <label for="importJsonFile_Part2"><i class="fas fa-file-import"></i> 匯入 JSON 數據 (用於編輯現有檔案)</label>
+                <input type="file" id="importJsonFile_Part2" accept=".json">
+                <button type="button" id="importJsonBtn_Part2" class="secondary"><i class="fas fa-upload"></i> 載入 JSON</button>
+                <button type="button" id="exportJsonBtn_Part2" class="secondary"><i class="fas fa-download"></i> 匯出 JSON</button>
+            </div>
+        </section>
+
+        <section id="part3" style="display: none;">
+            <h2><i class="fas fa-lightbulb"></i> Part 3: 設計答案與提示系統 (核心鷹架)</h2>
+            <p>這一階段的目標是為每個被隱藏的關鍵字詞提供不同層次（由具體到抽象）的提示，以及最終的完整答案和解釋。這將構成遊戲的核心學習鷹架。</p>
+
+            <div id="answersAndHintsForms">
+                <!-- 動態生成每個關鍵詞的表單 -->
+            </div>
+            <div class="button-group">
+                <button type="button" class="back" onclick="goToPart(2)"><i class="fas fa-undo"></i> 返回 Part 2</button>
+                <button type="button" id="proceedToPart4" disabled><i class="fas fa-arrow-right"></i> 前往 Part 4: 建立知識卡組</button>
+            </div>
+            <div class="form-group" style="margin-top: 20px;">
+                <label for="importJsonFile_Part3"><i class="fas fa-file-import"></i> 匯入 JSON 數據 (用於編輯現有檔案)</label>
+                <input type="file" id="importJsonFile_Part3" accept=".json">
+                <button type="button" id="importJsonBtn_Part3" class="secondary"><i class="fas fa-upload"></i> 載入 JSON</button>
+                <button type="button" id="exportJsonBtn_Part3" class="secondary"><i class="fas fa-download"></i> 匯出 JSON</button>
+            </div>
+        </section>
+
+        <section id="part4" style="display: none;">
+            <h2><i class="fas fa-cubes"></i> Part 4: 建立知識卡組 (Crafting Knowledge Card Sets)</h2>
+            <p>知識卡是「時空學園」遊戲中的核心互動元素，包含一張「正確知識卡」和多張「錯誤知識卡」。玩家需要根據提示選擇正確的知識卡。</p>
+            <p>請為每個關鍵詞設計一張正確知識卡及三張錯誤知識卡，作為遊戲中的選項。</p>
+
+            <div id="knowledgeCardSets">
+                <!-- 動態生成每個關鍵詞的表單 -->
+            </div>
+            <div class="button-group">
+                <button type="button" class="back" onclick="goToPart(3)"><i class="fas fa-undo"></i> 返回 Part 3</button>
+                <button type="button" id="proceedToPart5" disabled><i class="fas fa-arrow-right"></i> 前往 Part 5: 總結與匯出</button>
+            </div>
+            <div class="form-group" style="margin-top: 20px;">
+                <label for="importJsonFile_Part4"><i class="fas fa-file-import"></i> 匯入 JSON 數據 (用於編輯現有檔案)</label>
+                <input type="file" id="importJsonFile_Part4" accept=".json">
+                <button type="button" id="importJsonBtn_Part4" class="secondary"><i class="fas fa-upload"></i> 載入 JSON</button>
+                <button type="button" id="exportJsonBtn_Part4" class="secondary"><i class="fas fa-download"></i> 匯出 JSON</button>
+            </div>
+        </section>
+
+        <section id="part5" style="display: none;">
+            <h2><i class="fas fa-database"></i> Part 5: 總結與匯出 (Review & Export)</h2>
+
+            <h3><i class="fas fa-sitemap"></i> 總結設計邏輯</h3>
+            <p>這個「時空學園」題目設計的核心是「多層次逐步揭示資訊」的教學策略，其流程如下：</p>
+            <ol>
+                <li><strong>初始挑戰:</strong> 玩家看到線索文本中的<code>[[$某類]]</code>變數，需要根據上下文自行判斷。</li>
+                <li><strong>第一層提示 (文字內容):</strong> 如果玩家需要幫助，可以選擇查看最直接、最具體的提示。</li>
+                <li><strong>第二層提示 (正確知識卡提示):</strong> 如果仍無法猜出，則提供更豐富一些、更具背景資訊的提示。</li>
+                <li><strong>第三層提示 (整體鷹架提示):</strong> 如果仍有困難，則提供最廣泛、最概括的提示，幫助玩家從大方向思考。</li>
+                <li><strong>最終解答與學習 (解答說明):</strong> 當玩家成功答對後，會得到完整的解釋，從而達到學習目的。</li>
+            </ol>
+
+            <h3><i class="fas fa-clipboard-check"></i> 審閱與匯出您的命題</h3>
+            <p>請在這裡審閱您所設計的題目內容。您可以檢查所有欄位是否都已正確填寫，提示的層次是否合理，以及知識卡是否有效。</p>
+
+            <div class="summary-section">
+                <h3><i class="fas fa-file-alt"></i> 命題資料總覽</h3>
+                <p><strong><i class="fas fa-clone"></i> 總知識卡數:</strong> <span id="totalKnowledgeCards">0</span></p>
+                <p><strong><i class="fas fa-check-circle"></i> 正確知識卡數:</strong> <span id="correctKnowledgeCards">0</span></p>
+                <div class="summary-content">
+                    <pre id="fullDataSummary">點擊匯出按鈕查看完整數據...</pre>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="button" class="back" onclick="goToPart(4)"><i class="fas fa-undo"></i> 返回 Part 4</button>
+                <button type="button" id="exportData"><i class="fas fa-download"></i> 匯出 JSON</button>
+                <button type="button" id="exportWord"><i class="fas fa-file-word"></i> 匯出 Word (.doc)</button>
+            </div>
+            <div class="form-group" style="margin-top: 20px;">
+                <label for="importJsonFile_Part5"><i class="fas fa-file-import"></i> 匯入 JSON 數據 (用於編輯現有檔案)</label>
+                <input type="file" id="importJsonFile_Part5" accept=".json">
+                <button type="button" id="importJsonBtn_Part5" class="secondary"><i class="fas fa-upload"></i> 載入 JSON</button>
+                <button type="button" id="exportJsonBtn_Part5" class="secondary"><i class="fas fa-download"></i> 匯出 JSON</button>
+            </div>
+        </section>
+    </div>
+
+    <!-- 吉祥物獨立於 footer 的背景層次 -->
+    <div class="mascot-wrapper" id="mascotWrapper">
+        <img src="image/LiyuChillGuy.svg" alt="吉祥物" class="mascot-image">
+    </div>
+
+    <footer class="footer">
+        <div class="left-content"></div>
+        <div class="center-content">
+            <span>Copyright © Liyuchiutiger Gongminshen</span>
+        </div>
+        <div class="right-content"></div>
+    </footer>
+
+    <!-- tsParticles CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles-slim@2.12.0/tsparticles.slim.min.js"></script>
+    <!-- FileSaver.js for saving files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script>
+        const missionData = {}; // 全局數據對象
+        let keyphrases = []; // 用於存儲 Part 2 提取的關鍵詞和類別 [{original: "...", category: "...", color: "..."}]
+
+        // 所有學科選項
+        const ALL_SUBJECTS = ["國語", "英語", "數學", "自然", "社會", "國文", "英文", "理化", "生物", "地科", "歷史", "地理", "公民"];
+        // 關鍵詞顏色循環 - 現在只用這四種顏色，直接引用 CSS 變數
+        const KEYWORD_COLORS = [
+            'var(--answer-red)', 
+            'var(--answer-green)', 
+            'var(--answer-blue)', 
+            'var(--answer-purple)'
+        ];
+
+        // 輔助函數：字數計算器
+        function setupWordCounter(textareaId, counterId, limit) {
+            const textarea = document.getElementById(textareaId);
+            const counter = document.getElementById(counterId);
+
+            function updateCounter() {
+                const currentLength = textarea.value.length;
+                counter.textContent = `${currentLength}/${limit === -1 ? '無限制' : limit} 字`;
+                if (limit !== -1 && currentLength > limit) {
+                    counter.style.color = 'var(--ui-error-red)';
+                    textarea.style.borderColor = 'var(--ui-error-red)'; // 新增：字數超限時邊框變紅
+                } else {
+                    counter.style.color = 'var(--text-medium)';
+                    // 只有在填寫且符合限制時，才將邊框重設為預設色，否則讓 checkPart3Completion 決定
+                    if (textarea.value.trim().length > 0) {
+                         textarea.style.borderColor = 'var(--border-light)';
+                    } else { // 如果為空，也使用紅色邊框（由 checkPartXCompletion 統一處理）
+                         textarea.style.borderColor = 'var(--ui-error-red)'; // 暫時設置，等待 checkPartXCompletion 統一校正
+                    }
+                }
+            }
+
+            if (textarea && counter) {
+                textarea.addEventListener('input', updateCounter);
+                updateCounter(); // 初始化時更新一次
+            }
+        }
+
+        // 輔助函數：生成隨機ID
+        function generateUniqueId() {
+            return 'id_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        // 輔助函數：顯示/隱藏區塊
+        function toggleSection(sectionId, show) {
+            document.getElementById(sectionId).style.display = show ? 'block' : 'none';
+        }
+
+        // 導航到指定 Part
+        function goToPart(partNum) {
+            const currentPart = document.querySelector('section:not([style*="display: none"])');
+            if (currentPart) {
+                const currentPartId = currentPart.id;
+                // 根據當前 Part 保存數據
+                if (currentPartId === 'part1') collectPart1Data();
+                if (currentPartId === 'part2') collectPart2Data();
+                if (currentPartId === 'part3') missionData.part3 = getPart3DataFromDOM();
+                if (currentPartId === 'part4') missionData.part4 = getPart4DataFromDOM();
+            }
+
+            // 先隱藏所有 Part
+            for (let i = 1; i <= 5; i++) {
+                toggleSection(`part${i}`, false);
+            }
+            // 顯示目標 Part
+            toggleSection(`part${partNum}`, true);
+
+            // 當返回時，或首次進入時，根據 missionData 重新渲染動態表單
+            if (partNum === 2) {
+                // 如果 missionData 中有 Part 2 數據，則重新填充
+                if (missionData.part2?.originalText && missionData.part2?.keyphrases) {
+                    originalTextarea.value = missionData.part2.originalText;
+                    keyphrases = missionData.part2.keyphrases; // 重新載入 keyphrases 數組
+                    keyphrasesTextarea.value = keyphrases.map(kp => kp.original).join('\n');
+                    generateKeyphraseCategoriesBtn.click(); // 觸發生成關鍵詞表格
+                    setTimeout(() => { // 稍作延遲，確保 DOM 已生成
+                        keyphrases.forEach((kp, idx) => {
+                            const inputElem = document.getElementById(`keyphrase_category_input_${idx}`);
+                            if (inputElem) inputElem.value = kp.category;
+                        });
+                        generateClueTextBtn.click(); // 觸發生成線索文本預覽
+                    }, 50); // 短暫延遲
+                }
+            } else if (partNum === 3) {
+                generatePart3Forms();
+            } else if (partNum === 4) {
+                generatePart4Forms();
+            } else if (partNum === 5) {
+                checkPart4Completion(); // 更新 Part 5 的統計數據
+            }
+            
+            // 確保每次切換頁面後，按鈕狀態重新檢查
+            if (partNum === 1) checkPart1Completion();
+            if (partNum === 2) {
+                checkGenerateKeyphraseCategoriesBtn();
+                checkGenerateClueTextBtn(); 
+                checkProceedToPart3Btn();
+            }
+            if (partNum === 3) checkPart3Completion();
+            if (partNum === 4) checkPart4Completion();
+        }
+
+        // 輔助函數：圖片預覽
+        function setupImagePreview(fileInputId, imgPreviewId, urlInputId) {
+            const fileInput = document.getElementById(fileInputId);
+            const imgPreview = document.getElementById(imgPreviewId);
+            const urlInput = document.getElementById(urlInputId);
+
+            if (fileInput) {
+                fileInput.addEventListener('change', function() {
+                    if (this.files && this.files[0]) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            imgPreview.src = e.target.result;
+                            imgPreview.style.display = 'block';
+                            if (urlInput) urlInput.value = ''; // 清空 URL 輸入框
+                        };
+                        reader.readAsDataURL(this.files[0]);
+                    } else {
+                        if (!urlInput || urlInput.value === '') { // 如果沒有圖片URL才隱藏
+                            imgPreview.src = '';
+                            imgPreview.style.display = 'none';
+                        }
+                    }
+                });
+            }
+            if (urlInput) {
+                urlInput.addEventListener('input', function() {
+                    imgPreview.src = this.value;
+                    imgPreview.style.display = this.value ? 'block' : 'none';
+                    if (fileInput) fileInput.value = ''; // 清空文件輸入
+                });
+            }
+        }
+
+        // =========================================================
+        // Part 1 相關函數
+        // =========================================================
+        const missionTitleInput = document.getElementById('missionTitle');
+        const mainSubjectSelect = document.getElementById('mainSubject');
+        const customMainSubjectInputGroup = document.getElementById('customMainSubjectInputGroup');
+        const customMainSubjectInput = document.getElementById('customMainSubject');
+        const gradeLevelSelect = document.getElementById('gradeLevel');
+        const semesterLevelSelect = document.getElementById('semesterLevel');
+        
+        const otherSubjectsCheckboxesDiv = document.getElementById('otherSubjectsCheckboxes');
+        const customOtherSubjectInputGroup = document.getElementById('customOtherSubjectInputGroup');
+        const customOtherSubjectInput = document.getElementById('customOtherSubject');
+
+        const proceedToPart2Btn = document.getElementById('proceedToPart2');
+
+
+        // 生成其他學科複選框
+        function generateOtherSubjectsCheckboxes() {
+            let selectedMainSubject = mainSubjectSelect.value;
+            if (selectedMainSubject === '其他') {
+                selectedMainSubject = customMainSubjectInput.value.trim();
+            }
+
+            // 獲取當前已選中的其他學科，排除"其他"本身和自定義輸入
+            const checkedOtherSubjects = Array.from(otherSubjectsCheckboxesDiv.querySelectorAll('input[type="checkbox"]:checked'))
+                                            .map(cb => cb.value)
+                                            .filter(val => val !== '其他');
+            
+            // 獲取自定義其他學科的當前值
+            const currentCustomOtherSubjectValue = customOtherSubjectInput.value.trim();
+
+            otherSubjectsCheckboxesDiv.innerHTML = ''; // 清空舊內容
+
+            const filteredSubjects = ALL_SUBJECTS.filter(subject => subject !== selectedMainSubject);
+
+            filteredSubjects.forEach(subject => {
+                const checkboxId = `subSubject_${subject}`;
+                const isChecked = checkedOtherSubjects.includes(subject) ? 'checked' : '';
+                otherSubjectsCheckboxesDiv.insertAdjacentHTML('beforeend', `
+                    <input type="checkbox" id="${checkboxId}" value="${subject}" ${isChecked}> 
+                    <label for="${checkboxId}" style="display: inline;">${subject}</label>
+                `);
+            });
+
+            // 添加 "其他" 選項
+            const otherCheckboxId = `subSubject_其他`;
+            // 判斷"其他"是否應被勾選
+            let isOtherChecked = false;
+            // 如果之前 "其他" 被勾選
+            if (document.getElementById(otherCheckboxId) && document.getElementById(otherCheckboxId).checked) {
+                isOtherChecked = true;
+            }
+            // 如果當前自定義輸入框有值，且這些值不是預設學科，也認為 "其他" 應被勾選
+            if (currentCustomOtherSubjectValue.length > 0) {
+                const customParts = currentCustomOtherSubjectValue.split(',').map(s => s.trim()).filter(s => s.length > 0);
+                if (customParts.some(part => !ALL_SUBJECTS.includes(part))) {
+                    isOtherChecked = true;
+                }
+            }
+            // 如果從 missionData 載入，且其中包含非預設學科
+            if (missionData.part1 && missionData.part1.otherSubjects) {
+                if (missionData.part1.otherSubjects.some(sub => !ALL_SUBJECTS.includes(sub))) {
+                    isOtherChecked = true;
+                }
+            }
+            
+            otherSubjectsCheckboxesDiv.insertAdjacentHTML('beforeend', `
+                <input type="checkbox" id="${otherCheckboxId}" value="其他" ${isOtherChecked ? 'checked' : ''}> 
+                <label for="${otherCheckboxId}" style="display: inline;">其他 (請輸入)</label>
+            `);
+            
+            // 根據 "其他" 複選框的狀態顯示或隱藏自定義輸入框
+            if (isOtherChecked) {
+                customOtherSubjectInputGroup.style.display = 'flex';
+                // 恢復自定義值，如果 missionData 有則優先從 missionData 恢復
+                if (missionData.part1 && missionData.part1.otherSubjects) {
+                    const nonStandardSubs = missionData.part1.otherSubjects.filter(sub => !ALL_SUBJECTS.includes(sub));
+                    if (nonStandardSubs.length > 0) {
+                        customOtherSubjectInput.value = nonStandardSubs.join(',');
+                    } else if (!customOtherSubjectInput.value) { // 如果沒有非標準的，但輸入框本身沒值，則清空
+                        customOtherSubjectInput.value = '';
+                    }
+                } else if (!customOtherSubjectInput.value) { // 如果 missionData 也沒有，且輸入框沒值，則清空
+                    customOtherSubjectInput.value = '';
+                }
+            } else {
+                customOtherSubjectInputGroup.style.display = 'none';
+                customOtherSubjectInput.value = ''; // 清空自定義值
+            }
+        }
+
+        // 主學科選擇變更事件
+        mainSubjectSelect.addEventListener('change', () => {
+            if (mainSubjectSelect.value === '其他') {
+                customMainSubjectInputGroup.style.display = 'flex';
+                customMainSubjectInput.focus();
+            } else {
+                customMainSubjectInputGroup.style.display = 'none';
+                customMainSubjectInput.value = '';
+            }
+            generateOtherSubjectsCheckboxes(); // 重新生成其他學科選項，排除新的主學科
+            checkPart1Completion(); // 檢查 Part 1 完成狀態
+        });
+        
+        // 自定義主學科輸入框變更事件 (也觸發其他學科更新)
+        customMainSubjectInput.addEventListener('input', () => {
+            generateOtherSubjectsCheckboxes();
+            checkPart1Completion(); // 檢查 Part 1 完成狀態
+        });
+
+        // 其他學科複選框組的事件委託
+        otherSubjectsCheckboxesDiv.addEventListener('change', (event) => {
+            if (event.target.id === 'subSubject_其他') {
+                if (event.target.checked) {
+                    customOtherSubjectInputGroup.style.display = 'flex';
+                    customOtherSubjectInput.focus();
+                } else {
+                    customOtherSubjectInputGroup.style.display = 'none';
+                    customOtherSubjectInput.value = '';
+                }
+            }
+        });
+
+        // Part 1 的必填字段監聽和按鈕啟用/禁用
+        function checkPart1Completion() {
+            let isValid = true;
+
+            // 任務名稱
+            if (!missionTitleInput.value.trim()) isValid = false;
+
+            // 主學科
+            let currentMainSubject = mainSubjectSelect.value;
+            if (!currentMainSubject || currentMainSubject === "") isValid = false; // "請選擇"選項也算無效
+            if (currentMainSubject === '其他' && !customMainSubjectInput.value.trim()) isValid = false; // 只有當選擇「其他」時才檢查自定義輸入框
+
+            // 年級與學期
+            if (!gradeLevelSelect.value || gradeLevelSelect.value === "") isValid = false; // "選擇年級"也算無效
+            if (!semesterLevelSelect.value || semesterLevelSelect.value === "") isValid = false; // "選擇學期/階段"也算無效
+            
+            proceedToPart2Btn.disabled = !isValid;
+            return isValid; // 返回驗證結果
+        }
+
+        // 監聽所有相關輸入以檢查 Part 1 完成狀態
+        missionTitleInput.addEventListener('input', checkPart1Completion);
+        mainSubjectSelect.addEventListener('change', checkPart1Completion);
+        customMainSubjectInput.addEventListener('input', checkPart1Completion); 
+        gradeLevelSelect.addEventListener('change', checkPart1Completion);
+        semesterLevelSelect.addEventListener('change', checkPart1Completion);
+
+        document.getElementById('proceedToPart2').addEventListener('click', () => {
+            if (checkPart1Completion()) { // 再次執行驗證
+                collectPart1Data(); // 先收集 Part 1 數據
+                goToPart(2);
+            } else {
+                alert('請填寫 Part 1 的所有必填欄位！');
+            }
+        });
+
+        function collectPart1Data() {
+            let mainSub = mainSubjectSelect.value;
+            if (mainSub === '其他') {
+                mainSub = customMainSubjectInput.value.trim();
+            }
+
+            let otherSubs = Array.from(otherSubjectsCheckboxesDiv.querySelectorAll('input[type="checkbox"]:checked'))
+                               .map(cb => cb.value)
+                               .filter(val => val !== '其他'); // 過濾掉“其他”選項本身
+
+            // 如果「其他 (請輸入)」被勾選，則將其自定義內容加入
+            if (document.getElementById('subSubject_其他') && document.getElementById('subSubject_其他').checked) {
+                const customVal = customOtherSubjectInput.value.trim();
+                if (customVal) {
+                    customVal.split(',').map(s => s.trim()).filter(s => s.length > 0)
+                             .forEach(customSub => {
+                                 if (!otherSubs.includes(customSub)) { // 避免重複
+                                     otherSubs.push(customSub);
+                                 }
+                             });
+                }
+            }
+            // 確保主學科不重複出現在其他學科中
+            otherSubs = otherSubs.filter(sub => sub !== mainSub);
+
+            missionData.part1 = {
+                missionTitle: document.getElementById('missionTitle').value.trim(),
+                mainSubject: mainSub,
+                otherSubjects: otherSubs,
+                curriculumGuidelines: document.getElementById('curriculumGuidelines').value.trim(),
+                gradeLevel: document.getElementById('gradeLevel').value,
+                semesterLevel: document.getElementById('semesterLevel').value,
+                location: document.getElementById('location').value.trim(),
+                century: document.getElementById('century').value.trim()
+            };
+        }
+        // =========================================================
+        // Part 2 相關函數
+        // =========================================================
+        const originalTextarea = document.getElementById('originalText');
+        const keyphrasesTextarea = document.getElementById('keyphrasesInput');
+        const generateKeyphraseCategoriesBtn = document.getElementById('generateKeyphraseCategories');
+        const keyphraseCategoryTableBody = document.getElementById('keyphraseCategoryTable').querySelector('tbody');
+        const generateClueTextBtn = document.getElementById('generateClueText');
+        const clueTextPreviewDiv = document.getElementById('clueTextPreview');
+        const proceedToPart3Btn = document.getElementById('proceedToPart3');
+
+        // 檢查「確認關鍵詞並定義類別」按鈕狀態
+        function checkGenerateKeyphraseCategoriesBtn() {
+            const originalTextFilled = originalTextarea.value.trim().length > 0;
+            const keyphrasesFilled = keyphrasesTextarea.value.trim().length > 0;
+            generateKeyphraseCategoriesBtn.disabled = !(originalTextFilled && keyphrasesFilled);
+            return (originalTextFilled && keyphrasesFilled);
+        }
+        originalTextarea.addEventListener('input', checkGenerateKeyphraseCategoriesBtn);
+        keyphrasesTextarea.addEventListener('input', checkGenerateKeyphraseCategoriesBtn);
+
+        document.getElementById('generateKeyphraseCategories').addEventListener('click', () => {
+            if (!checkGenerateKeyphraseCategoriesBtn()) { // 再次驗證
+                alert('請確保原始線索文本和關鍵詞都已填寫！');
+                return;
+            }
+
+            const keyphrasesInput = keyphrasesTextarea.value.split('\n').map(s => s.trim()).filter(s => s.length > 0);
+            if (keyphrasesInput.length === 0) {
+                alert('請輸入關鍵詞！');
+                return;
+            }
+
+            keyphraseCategoryTableBody.innerHTML = ''; // 清空舊內容
+            // 清空並根據輸入重新生成 keyphrases 數組，此時 category 留空
+            // 注意：這裡初始化 keyphrases 陣列，只包含 original
+            keyphrases = keyphrasesInput.map(kp => ({ original: kp, category: '', color: '' })); 
+
+            // 從 missionData.part2 恢復 category (如果存在)
+            if (missionData.part2 && missionData.part2.keyphrases) {
+                keyphrases.forEach(kp => {
+                    const existingKp = missionData.part2.keyphrases.find(item => item.original === kp.original);
+                    if (existingKp) {
+                        kp.category = existingKp.category;
+                    }
+                });
+            }
+
+            keyphrases.forEach((kp, idx) => {
+                kp.color = KEYWORD_COLORS[idx % KEYWORD_COLORS.length]; // 賦予顏色 (從這四個中循環)
+                
+                const row = keyphraseCategoryTableBody.insertRow();
+                const cell1 = row.insertCell(0);
+                const cell2 = row.insertCell(1);
+
+                cell1.textContent = kp.original;
+                
+
+                const inputId = `keyphrase_category_input_${idx}`; // 動態生成 ID
+                const categoryInput = document.createElement('input');
+                categoryInput.type = 'text';
+                categoryInput.id = inputId;
+                categoryInput.value = kp.category || ''; // 移除默認建議，只用已恢復的或空字串
+                categoryInput.placeholder = '請定義變數類別';
+                categoryInput.required = true; // 設置為必填
+                categoryInput.style.borderLeft = `5px solid ${kp.color}`;
+                categoryInput.style.paddingLeft = '5px';
+                categoryInput.dataset.keywordColor = kp.color; // 儲存顏色數據
+                categoryInput.dataset.originalIndex = idx; // 存儲索引以便更新全局 keyphrases 數組
+
+                categoryInput.addEventListener('input', (event) => {
+                    const updatedIndex = parseInt(event.target.dataset.originalIndex, 10);
+                    if (!isNaN(updatedIndex) && keyphrases[updatedIndex]) {
+                        keyphrases[updatedIndex].category = event.target.value.trim(); // 更新全局 keyphrases 數組
+                    }
+                    checkGenerateClueTextBtn(); // 監聽輸入以啟用下一按鈕
+                });
+                cell2.appendChild(categoryInput);
+            });
+            // 在生成 keyphrases 後，也更新 missionData.part2 中的 keyphrases 數組 (僅包含 original 和 category)
+            missionData.part2 = { ...missionData.part2, keyphrases: keyphrases.map(kp => ({ original: kp.original, category: kp.category, color: kp.color })) };
+
+
+            toggleSection('keyphraseCategorySection', true);
+            checkGenerateClueTextBtn(); // 根據實際內容重新檢查
+        });
+
+        // 檢查「生成線索文本預覽」按鈕狀態
+        function checkGenerateClueTextBtn() {
+            let allCategoriesDefined = true;
+            if (keyphrases.length === 0) { // 如果還沒有關鍵詞列表，則禁用
+                allCategoriesDefined = false;
+            } else {
+                keyphrases.forEach(kp => {
+                    // 直接檢查全局 keyphrases 數組中的 category
+                    if (!kp.category || kp.category.trim().length === 0) {
+                        allCategoriesDefined = false;
+                    }
+                });
+            }
+            generateClueTextBtn.disabled = !allCategoriesDefined;
+            return allCategoriesDefined;
+        }
+
+        document.getElementById('generateClueText').addEventListener('click', () => {
+            if (!checkGenerateClueTextBtn()) { // 再次驗證
+                alert('請為所有關鍵詞定義變數類別！');
+                return;
+            }
+
+            let clueText = originalTextarea.value;
+            keyphrases.forEach((kp, idx) => {
+                const regex = new RegExp(kp.original.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+                // 為高亮元素添加顏色 class
+                clueText = clueText.replace(regex, `<span class="highlight color-${idx % KEYWORD_COLORS.length}">[[$${kp.category}]]</span>`);
+            });
+            // 儲存處理後的 HTML 和原始文本
+            missionData.part2 = { 
+                ...missionData.part2, 
+                clueTextHtml: clueText, 
+                originalText: originalTextarea.value,
+                keyphrases: keyphrases.map(kp => ({ original: kp.original, category: kp.category, color: kp.color })) // 再次確保 keyphrases 數據最新
+            };
+
+
+            clueTextPreviewDiv.innerHTML = clueText;
+            toggleSection('clueTextPreviewSection', true);
+            checkProceedToPart3Btn(); // 啟用前往 Part 3
+        });
+
+        // 收集 Part 2 數據的函數
+        function collectPart2Data() {
+            missionData.part2 = missionData.part2 || {};
+            missionData.part2.originalText = originalTextarea.value;
+            // 確保 keyphrases 陣列中的 category 是最新的，從 DOM 中讀取或從全局 keyphrases 陣列中獲取
+            const updatedKeyphrases = keyphrases.map((kp, idx) => {
+                const inputElem = document.getElementById(`keyphrase_category_input_${idx}`);
+                return { original: kp.original, category: inputElem ? inputElem.value.trim() : kp.category, color: kp.color }; // 保持 color 屬性
+            });
+            missionData.part2.keyphrases = updatedKeyphrases;
+            missionData.part2.clueTextHtml = clueTextPreviewDiv.innerHTML;
+        }
+
+        // 檢查「前往 Part 3」按鈕狀態
+        function checkProceedToPart3Btn() {
+            proceedToPart3Btn.disabled = !clueTextPreviewDiv.innerHTML.trim();
+            return !!clueTextPreviewDiv.innerHTML.trim();
+        }
+
+        document.getElementById('proceedToPart3').addEventListener('click', () => {
+            if (checkProceedToPart3Btn()) { // 再次驗證
+                goToPart(3);
+                // generatePart3Forms(); 已經在 goToPart 裡面調用
+            } else {
+                alert('請先生成線索文本預覽！');
+            }
+        });
+
+
+        // =========================================================
+        // Part 3: 生成答案與提示表單
+        // =========================================================
+        const answersAndHintsFormsContainer = document.getElementById('answersAndHintsForms');
+        const proceedToPart4Btn = document.getElementById('proceedToPart4');
+
+        // Part 3數據讀取函數
+        function getPart3DataFromDOM() {
+            const currentPart3Data = {};
+            keyphrases.forEach((kp, index) => {
+                const formId = `hints_form_${index}`;
+                const explanationElem = document.getElementById(`${formId}_explanation`);
+                const hint1Elem = document.getElementById(`${formId}_hint1`);
+                const hint2Elem = document.getElementById(`${formId}_hint2`);
+                const hint3Elem = document.getElementById(`${formId}_hint3`);
+
+                // 只有當這些元素實際存在於DOM中時才讀取它們的值
+                if (explanationElem && hint1Elem && hint2Elem && hint3Elem) {
+                    currentPart3Data[kp.original] = { // 使用 kp.original 作為鍵
+                        explanation: explanationElem.value,
+                        hint1_textContent: hint1Elem.value,
+                        hint2_knowledgeCardScaffold: hint2Elem.value,
+                        hint3_overallScaffold: hint3Elem.value
+                    };
+                }
+            });
+            return currentPart3Data;
+        }
+
+        function generatePart3Forms() {
+            if (keyphrases.length === 0) {
+                answersAndHintsFormsContainer.innerHTML = '<p style="color:var(--ui-error-red);">請先在 Part 2 定義關鍵詞。</p>';
+                checkPart3Completion(); // 這裡應該是禁用按鈕，而不是讓它被啟用
+                proceedToPart4Btn.disabled = true; // 顯式禁用按鈕
+                return;
+            }
+            
+            // 清除並重建DOM結構
+            answersAndHintsFormsContainer.innerHTML = ''; 
+
+            keyphrases.forEach((kp, index) => {
+                const formId = `hints_form_${index}`;
+                // 從 missionData.part3 加載現有數據進行預填充
+                const existingData = missionData.part3[kp.original] || {}; // 使用 kp.original 訪問數據
+
+                const formHtml = `
+                    <div class="knowledge-card">
+                        <h3 class="color-${index % KEYWORD_COLORS.length}"><i class="fas fa-key"></i> 關鍵詞 ${index + 1}: ${kp.original}</h3>
+                        <div class="form-group">
+                            <label><i class="fas fa-bullseye-arrow"></i> 1. 目標答案 (Target Answer)</label>
+                            <input type="text" value="${kp.original}" class="color-${index % KEYWORD_COLORS.length}" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="${formId}_explanation"><i class="fas fa-scroll-old"></i> 2. 最終解答說明 (Full Explanation)</label>
+                            <textarea id="${formId}_explanation" required>${existingData.explanation || ''}</textarea>
+                            <div class="word-count" id="${formId}_explanation_counter">0/無限制 字</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="${formId}_hint1"><i class="fas fa-message-captions"></i> 3. 第一層提示：文字內容 (Most Direct Hint)</label>
+                            <textarea id="${formId}_hint1" rows="2" required>${existingData.hint1_textContent || ''}</textarea>
+                            <div class="word-count" id="${formId}_hint1_counter">0/12 字</div> <!-- 12字限制 -->
+                        </div>
+                        <div class="form-group">
+                            <label for="${formId}_hint2"><i class="fas fa-brain-circuit"></i> 4. 第二層提示：正確知識卡鷹架提示 (Background/Contextual Hint)</label>
+                            <textarea id="${formId}_hint2" rows="2" required>${existingData.hint2_knowledgeCardScaffold || ''}</textarea>
+                            <div class="word-count" id="${formId}_hint2_counter">0/25 字</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="${formId}_hint3"><i class="fas fa-galaxy"></i> 5. 第三層提示：整體鷹架提示 (Broadest Scaffolding Hint)</label>
+                            <textarea id="${formId}_hint3" rows="2" required>${existingData.hint3_overallScaffold || ''}</textarea>
+                            <div class="word-count" id="${formId}_hint3_counter">0/25 字</div>
+                        </div>
+                    </div>
+                `;
+                answersAndHintsFormsContainer.insertAdjacentHTML('beforeend', formHtml);
+
+                setupWordCounter(`${formId}_explanation`, `${formId}_explanation_counter`, -1);
+                setupWordCounter(`${formId}_hint1`, `${formId}_hint1_counter`, 12); // 12字限制
+                setupWordCounter(`${formId}_hint2`, `${formId}_hint2_counter`, 25);
+                setupWordCounter(`${formId}_hint3`, `${formId}_hint3_counter`, 25);
+            });
+
+            answersAndHintsFormsContainer.addEventListener('input', checkPart3Completion);
+            checkPart3Completion(); // 初始化檢查
+        }
+
+        function checkPart3Completion() {
+            // 如果沒有關鍵詞，直接禁用按鈕
+            if (keyphrases.length === 0) {
+                proceedToPart4Btn.disabled = true;
+                return false;
+            }
+
+            const textareas = document.querySelectorAll('#answersAndHintsForms textarea');
+            // 檢查是否所有預期的 textareas 都已生成 (每個關鍵詞有4個textarea)
+            if (textareas.length !== keyphrases.length * 4) {
+                 proceedToPart4Btn.disabled = true;
+                 return false;
+            }
+
+            let allFormsFilledAndValid = true;
+
+            Array.from(textareas).forEach(textarea => { // 使用 forEach 來遍歷並應用視覺反饋
+                const isHint1 = textarea.id.includes('_hint1');
+                const isHint2 = textarea.id.includes('_hint2');
+                const isHint3 = textarea.id.includes('_hint3');
+
+                let limit = -1; // -1表示無限制
+                if (isHint1) limit = 12;
+                else if (isHint2 || isHint3) limit = 25;
+                
+                const isFilled = textarea.value.trim().length > 0;
+                const withinLimit = (limit === -1 || textarea.value.length <= limit);
+
+                const counterId = textarea.id + '_counter';
+                const counter = document.getElementById(counterId);
+
+                if (!isFilled || !withinLimit) {
+                    allFormsFilledAndValid = false; // 只要有一個不符合，就設為 false
+                    textarea.style.borderColor = 'var(--ui-error-red)'; // 邊框變紅
+                    if (counter) counter.style.color = 'var(--ui-error-red)'; // 字數計數器變紅
+                } else {
+                    textarea.style.borderColor = 'var(--border-light)'; // 恢復預設邊框
+                    if (counter) counter.style.color = 'var(--text-medium)'; // 恢復預設字數計數器顏色
+                }
+            });
+            
+            proceedToPart4Btn.disabled = !allFormsFilledAndValid;
+            return allFormsFilledAndValid;
+        }
+
+        document.getElementById('proceedToPart4').addEventListener('click', () => {
+            if (!checkPart3Completion()) {
+                alert('請填寫 Part 3 的所有必填欄位，並確保文字內容符合字數限制！請檢查紅色的輸入框。');
+                return;
+            }
+            // 收集 Part 3 數據
+            missionData.part3 = getPart3DataFromDOM(); // 從當前DOM收集最新數據
+
+            goToPart(4);
+            // generatePart4Forms(); 已經在 goToPart 裡面調用
+        });
+
+
+        // =========================================================
+        // Part 4: 生成知識卡表單
+        // =========================================================
+        const knowledgeCardSetsContainer = document.getElementById('knowledgeCardSets');
+        const proceedToPart5Btn = document.getElementById('proceedToPart5');
+
+        // Part 4數據讀取函數
+        function getPart4DataFromDOM() {
+            const currentPart4Data = {};
+            keyphrases.forEach((kp, index) => {
+                const currentPart4KeyData = {};
+                const correctCardPrefix = `correct_card_${index}`;
+                
+                // Correct Card
+                const correctCardCategorySelect = document.getElementById(`${correctCardPrefix}_category`);
+                const correctCardImageFile = document.getElementById(`${correctCardPrefix}_image_file`);
+                const correctCardImageUrl = document.getElementById(`${correctCardPrefix}_image_url`);
+                const correctCardExternalInfo = document.getElementById(`${correctCardPrefix}_externalInfo`);
+                const correctCardTextContent = document.getElementById(`${correctCardPrefix}_textcontent`);
+
+                currentPart4KeyData.correctCard = {
+                    cardName: kp.original, // Fixed
+                    // 優先使用 URL，如果沒有 URL 但有檔案，則使用檔案名
+                    imageUrl: correctCardImageUrl?.value || (correctCardImageFile?.files && correctCardImageFile.files[0] ? `files/${correctCardImageFile.files[0].name}` : ''),
+                    category: correctCardCategorySelect?.value || '',
+                    textContent: correctCardTextContent?.value || '', // 從 Part 4 正確卡定義中獲取
+                    externalInfo: correctCardExternalInfo?.value || '',
+                    clueDescription: kp.category, // From Part 2 keyphrases
+                    scaffoldingHint: missionData.part3[kp.original]?.hint2_knowledgeCardScaffold || '' // From Part 3
+                };
+
+                // Incorrect Cards
+                currentPart4KeyData.incorrectCards = [];
+                const incorrectCardsContainer = document.getElementById(`incorrect_cards_${index}_container`);
+                if (incorrectCardsContainer) {
+                    const incorrectCardElements = incorrectCardsContainer.querySelectorAll('.knowledge-card.incorrect');
+                    incorrectCardElements.forEach(cardElem => {
+                        const cardId = cardElem.id;
+                        const incorrectCardNameInput = document.getElementById(`${cardId}_name`);
+                        const incorrectCardImageFile = document.getElementById(`${cardId}_image_file`);
+                        const incorrectCardImageUrl = document.getElementById(`${cardId}_image_url`);
+                        const incorrectCardCategorySelect = document.getElementById(`${cardId}_category`);
+                        const incorrectCardTextContent = document.getElementById(`${cardId}_textcontent`);
+                        const incorrectCardExternalInfo = document.getElementById(`${cardId}_externalInfo`);
+
+                        currentPart4KeyData.incorrectCards.push({
+                            cardName: incorrectCardNameInput?.value || '',
+                            imageUrl: incorrectCardImageUrl?.value || (incorrectCardImageFile?.files && incorrectCardImageFile.files[0] ? `files/${incorrectCardImageFile.files[0].name}` : ''),
+                            category: incorrectCardCategorySelect?.value || '',
+                            textContent: incorrectCardTextContent?.value || '',
+                            externalInfo: incorrectCardExternalInfo?.value || '',
+                            clueDescription: kp.category // From Part 2 keyphrases
+                        });
+                    });
+                }
+                currentPart4Data[kp.original] = currentPart4KeyData;
+            });
+            return currentPart4Data;
+        }
+
+        function generatePart4Forms() {
+            if (keyphrases.length === 0) {
+                knowledgeCardSetsContainer.innerHTML = '<p style="color:var(--ui-error-red);">請先在 Part 2 定義關鍵詞。</p>';
+                checkPart4Completion();
+                return;
+            }
+
+            // 清除並重建DOM結構
+            knowledgeCardSetsContainer.innerHTML = ''; 
+
+            keyphrases.forEach((kp, index) => {
+                // 從 Part 3 獲取第一層提示作為正確知識卡的文字內容定義
+                const correctCardDefinition = missionData.part3[kp.original]?.hint1_textContent || '';
+                const correctCardScaffoldingHint = missionData.part3[kp.original]?.hint2_knowledgeCardScaffold || '';
+
+                // 從missionData.part4加載現有數據進行預填充
+                const existingCorrectCard = (missionData.part4[kp.original] && missionData.part4[kp.original].correctCard) || {};
+                const existingIncorrectCards = (missionData.part4[kp.original] && missionData.part4[kp.original].incorrectCards) || [];
+
+                const cardSetHtml = `
+                    <div class="card-set-for-keyphrase">
+                        <h3 class="color-${index % KEYWORD_COLORS.length}"><i class="fas fa-puzzle-piece"></i> 關鍵詞 ${index + 1}: ${kp.original} 的知識卡組</h3>
+                        <div class="knowledge-card correct">
+                            <h4><i class="fas fa-check-circle"></i> A. 正確知識卡: ${kp.original}</h4>
+                            <div class="form-group">
+                                <label><i class="fas fa-signature"></i> 卡片名稱:</label>
+                                <input type="text" value="${kp.original}" class="color-${index % KEYWORD_COLORS.length}" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="correct_card_${index}_image_file"><i class="fas fa-image"></i> 圖片 (檔案上傳):</label>
+                                <input type="file" id="correct_card_${index}_image_file" accept="image/*">
+                                <label for="correct_card_${index}_image_url"><i class="fas fa-link"></i> 或 圖片 (URL):</label>
+                                <input type="url" id="correct_card_${index}_image_url" placeholder="輸入圖片 URL" value="${existingCorrectCard.imageUrl && !existingCorrectCard.imageUrl.startsWith('files/') ? existingCorrectCard.imageUrl : ''}">
+                                <img id="correct_card_${index}_image_preview" class="image-preview" src="${existingCorrectCard.imageUrl || ''}" style="display: ${existingCorrectCard.imageUrl ? 'block' : 'none'};">
+                            </div>
+                            <div class="form-group">
+                                <label for="correct_card_${index}_category"><i class="fas fa-folder-open"></i> 類別:</label>
+                                <select id="correct_card_${index}_category" required>
+                                    <option value="">請選擇</option>
+                                    <option value="事件卡" ${existingCorrectCard.category === '事件卡' ? 'selected' : ''}>事件卡</option>
+                                    <option value="人物卡" ${existingCorrectCard.category === '人物卡' ? 'selected' : ''}>人物卡</option>
+                                    <option value="時間卡" ${existingCorrectCard.category === '時間卡' ? 'selected' : ''}>時間卡</option>
+                                    <option value="地點卡" ${existingCorrectCard.category === '地點卡' ? 'selected' : ''}>地點卡</option>
+                                    <option value="物件卡" ${existingCorrectCard.category === '物件卡' ? 'selected' : ''}>物件卡</option>
+                                    <option value="語文卡" ${existingCorrectCard.category === '語文卡' ? 'selected' : ''}>語文卡</option>
+                                    <option value="數字卡" ${existingCorrectCard.category === '數字卡' ? 'selected' : ''}>數字卡</option>
+                                    <option value="符號卡" ${existingCorrectCard.category === '符號卡' ? 'selected' : ''}>符號卡</option>
+                                    <option value="概念卡" ${existingCorrectCard.category === '概念卡' ? 'selected' : ''}>概念卡</option>
+                                    <option value="現象卡" ${existingCorrectCard.category === '現象卡' ? 'selected' : ''}>現象卡</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="correct_card_${index}_textcontent"><i class="fas fa-comment-alt-edit"></i> 文字內容 (定義):</label>
+                                <textarea id="correct_card_${index}_textcontent" rows="2" required readonly>${correctCardDefinition}</textarea>
+                                <div class="word-count" id="correct_card_${index}_textcontent_counter">0/12 字</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="correct_card_${index}_externalInfo"><i class="fas fa-external-link-alt"></i> 因材網或外部資訊 (URL):</label>
+                                <input type="url" id="correct_card_${index}_externalInfo" value="${existingCorrectCard.externalInfo || ''}">
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-tag"></i> 卡片線索說明 (與題幹關鍵詞變數相同):</label>
+                                <input type="text" value="${kp.category}" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-network-wired"></i> 正確知識卡鷹架提示 (來自 Part 3):</label>
+                                <textarea readonly>${correctCardScaffoldingHint}</textarea>
+                            </div>
+                        </div>
+
+                        <h4><i class="fas fa-times-circle"></i> B. 錯誤知識卡組</h4>
+                        <div id="incorrect_cards_${index}_container">
+                            <!-- 錯誤知識卡將動態添加於此 -->
+                        </div>
+                    </div>
+                `;
+                knowledgeCardSetsContainer.insertAdjacentHTML('beforeend', cardSetHtml);
+
+                setupImagePreview(`correct_card_${index}_image_file`, `correct_card_${index}_image_preview`, `correct_card_${index}_image_url`);
+                setupWordCounter(`correct_card_${index}_textcontent`, `correct_card_${index}_textcontent_counter`, 12); // 正確卡定義也是12字
+
+                // 固定生成3張錯誤知識卡，並從數據恢復
+                for (let i = 0; i < 3; i++) {
+                    addIncorrectCard(kp.original, index, i, existingIncorrectCards[i] || {}); // 傳遞錯誤卡的索引 i
+                }
+            });
+
+            knowledgeCardSetsContainer.addEventListener('input', checkPart4Completion);
+            knowledgeCardSetsContainer.addEventListener('change', checkPart4Completion);
+            checkPart4Completion();
+        }
+
+        function addIncorrectCard(originalKeyphrase, keyphraseIndex, cardIndex, cardData = {}) { // 增加 cardIndex 參數
+            const container = document.getElementById(`incorrect_cards_${keyphraseIndex}_container`);
+            const cardId = `incorrect_card_${keyphraseIndex}_${cardIndex}`; // 更獨特的 ID
+
+            const cardHtml = `
+                <div class="knowledge-card incorrect" id="${cardId}">
+                    <h5><i class="fas fa-exclamation-triangle"></i> 錯誤知識卡 ${cardIndex + 1}</h5>
+                    <div class="form-group">
+                        <label for="${cardId}_name"><i class="fas fa-signature"></i> 卡片名稱:</label>
+                        <input type="text" id="${cardId}_name" value="${cardData.cardName || ''}" class="color-${keyphraseIndex % KEYWORD_COLORS.length}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="${cardId}_image_file"><i class="fas fa-image"></i> 圖片 (檔案上傳):</label>
+                        <input type="file" id="${cardId}_image_file" accept="image/*">
+                        <label for="${cardId}_image_url"><i class="fas fa-link"></i> 或 圖片 (URL):</label>
+                        <input type="url" id="${cardId}_image_url" placeholder="輸入圖片 URL" value="${cardData.imageUrl && !cardData.imageUrl.startsWith('files/') ? cardData.imageUrl : ''}">
+                        <img id="${cardId}_image_preview" class="image-preview" src="${cardData.imageUrl || ''}" style="display: ${cardData.imageUrl ? 'block' : 'none'};">
+                    </div>
+                    <div class="form-group">
+                        <label for="${cardId}_category"><i class="fas fa-folder-open"></i> 類別:</label>
+                        <select id="${cardId}_category" required>
+                            <option value="">請選擇</option>
+                            <option value="事件卡" ${cardData.category === '事件卡' ? 'selected' : ''}>事件卡</option>
+                            <option value="人物卡" ${cardData.category === '人物卡' ? 'selected' : ''}>人物卡</option>
+                            <option value="時間卡" ${cardData.category === '時間卡' ? 'selected' : ''}>時間卡</option>
+                            <option value="地點卡" ${cardData.category === '地點卡' ? 'selected' : ''}>地點卡</option>
+                            <option value="物件卡" ${cardData.category === '物件卡' ? 'selected' : ''}>物件卡</option>
+                            <option value="語文卡" ${cardData.category === '語文卡' ? 'selected' : ''}>語文卡</option>
+                            <option value="數字卡" ${cardData.category === '數字卡' ? 'selected' : ''}>數字卡</option>
+                            <option value="符號卡" ${cardData.category === '符號卡' ? 'selected' : ''}>符號卡</option>
+                            <option value="概念卡" ${cardData.category === '概念卡' ? 'selected' : ''}>概念卡</option>
+                            <option value="現象卡" ${cardData.category === '現象卡' ? 'selected' : ''}>現象卡</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="${cardId}_textcontent"><i class="fas fa-comment-alt-edit"></i> 文字內容 (定義):</label>
+                        <textarea id="${cardId}_textcontent" rows="2" required>${cardData.textContent || ''}</textarea>
+                        <div class="word-count" id="${cardId}_textcontent_counter">0/12 字</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="${cardId}_externalInfo"><i class="fas fa-external-link-alt"></i> 因材網或外部資訊 (URL):</label>
+                        <input type="url" id="${cardId}_externalInfo" value="${cardData.externalInfo || ''}">
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', cardHtml);
+
+            setupImagePreview(`${cardId}_image_file`, `${cardId}_image_preview`, `${cardId}_image_url`);
+            setupWordCounter(`${cardId}_textcontent`, `${cardId}_textcontent_counter`, 12);
+            checkPart4Completion(); // 確保每次添加後檢查完成狀態
+        }
+
+
+        function checkPart4Completion() {
+            let allFilled = true;
+            let correctCardCount = 0;
+            let totalCardCount = 0;
+
+            if (keyphrases.length === 0) { // 如果沒有關鍵詞，則無法完成 Part 4
+                allFilled = false;
+                proceedToPart5Btn.disabled = true;
+                return false;
+            }
+
+            keyphrases.forEach((kp, index) => {
+                // 檢查正確知識卡
+                const correctCardTextContentInput = document.getElementById(`correct_card_${index}_textcontent`);
+                const correctCardCategorySelect = document.getElementById(`correct_card_${index}_category`);
+
+                // 為正確卡輸入框添加視覺反饋
+                const correctTextValid = correctCardTextContentInput && correctCardTextContentInput.value.trim().length > 0 && correctCardTextContentInput.value.length <= 12;
+                const correctCategoryValid = correctCardCategorySelect && correctCardCategorySelect.value !== "";
+
+                if (!correctTextValid) {
+                    if (correctCardTextContentInput) correctCardTextContentInput.style.borderColor = 'var(--ui-error-red)';
+                    const counter = document.getElementById(`correct_card_${index}_textcontent_counter`);
+                    if (counter) counter.style.color = 'var(--ui-error-red)';
+                    allFilled = false;
+                } else {
+                    if (correctCardTextContentInput) correctCardTextContentInput.style.borderColor = 'var(--border-light)';
+                    const counter = document.getElementById(`correct_card_${index}_textcontent_counter`);
+                    if (counter) counter.style.color = 'var(--text-medium)';
+                }
+                if (!correctCategoryValid) {
+                    if (correctCardCategorySelect) correctCardCategorySelect.style.borderColor = 'var(--ui-error-red)';
+                    allFilled = false;
+                } else {
+                     if (correctCardCategorySelect) correctCardCategorySelect.style.borderColor = 'var(--border-light)';
+                }
+
+
+                if (correctTextValid && correctCategoryValid) {
+                    correctCardCount++;
+                    totalCardCount++;
+                } else {
+                    allFilled = false;
+                }
+
+
+                // 檢查錯誤知識卡（剛好三張且都填寫）
+                const incorrectCardsContainer = document.getElementById(`incorrect_cards_${index}_container`);
+                const incorrectCardElements = incorrectCardsContainer ? incorrectCardsContainer.querySelectorAll('.knowledge-card.incorrect') : [];
+                
+                // 確保剛好有3張錯誤卡
+                if (incorrectCardElements.length !== 3) {
+                    allFilled = false; // 這是一個嚴重的結構問題
+                }
+
+                incorrectCardElements.forEach(cardElem => {
+                    const cardId = cardElem.id;
+                    const nameInput = document.getElementById(`${cardId}_name`);
+                    const textContentInput = document.getElementById(`${cardId}_textcontent`);
+                    const categorySelect = document.getElementById(`${cardId}_category`);
+
+                    const nameValid = nameInput && nameInput.value.trim().length > 0;
+                    const textContentValid = textContentInput && textContentInput.value.trim().length > 0 && textContentInput.value.length <= 12;
+                    const categoryValid = categorySelect && categorySelect.value !== "";
+
+                    if (!nameValid) {
+                        if (nameInput) nameInput.style.borderColor = 'var(--ui-error-red)';
+                        allFilled = false;
+                    } else {
+                        if (nameInput) nameInput.style.borderColor = 'var(--border-light)';
+                    }
+
+                    if (!textContentValid) {
+                        if (textContentInput) textContentInput.style.borderColor = 'var(--ui-error-red)';
+                        const counter = document.getElementById(`${cardId}_textcontent_counter`);
+                        if (counter) counter.style.color = 'var(--ui-error-red)';
+                        allFilled = false;
+                    } else {
+                        if (textContentInput) textContentInput.style.borderColor = 'var(--border-light)';
+                        const counter = document.getElementById(`${cardId}_textcontent_counter`);
+                        if (counter) counter.style.color = 'var(--text-medium)';
+                    }
+                    
+                    if (!categoryValid) {
+                        if (categorySelect) categorySelect.style.borderColor = 'var(--ui-error-red)';
+                        allFilled = false;
+                    } else {
+                        if (categorySelect) categorySelect.style.borderColor = 'var(--border-light)';
+                    }
+
+                    totalCardCount++;
+                });
+            });
+
+            proceedToPart5Btn.disabled = !allFilled;
+            document.getElementById('totalKnowledgeCards').textContent = totalCardCount;
+            document.getElementById('correctKnowledgeCards').textContent = correctCardCount;
+            return allFilled;
+        }
+
+        document.getElementById('proceedToPart5').addEventListener('click', () => {
+            if (!checkPart4Completion()) {
+                alert('請確保所有正確知識卡和剛好三張錯誤知識卡都已填寫完成，且文字內容符合字數限制！請檢查紅色的輸入框。');
+                return;
+            }
+            // 收集 Part 4 數據
+            missionData.part4 = getPart4DataFromDOM(); // 從當前DOM收集最新數據
+
+            goToPart(5);
+            checkPart4Completion(); // 更新總卡片數
+        });
+
+        // 匯出數據
+        document.getElementById('exportData').addEventListener('click', () => {
+            // 確保所有數據都已收集到 missionData 中
+            collectPart1Data();
+            collectPart2Data(); // 確保 Part 2 最新數據已收集
+            missionData.part3 = getPart3DataFromDOM(); // 收集最終的 Part 3數據
+            missionData.part4 = getPart4DataFromDOM(); // 收集最終的 Part 4數據
+
+            const dataStr = JSON.stringify(missionData, null, 2);
+            document.getElementById('fullDataSummary').textContent = dataStr; // 顯示在預覽區
+
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `時空學園命題_${missionData.part1?.missionTitle || '未命名'}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+        // =========================================================
+        // JSON 匯入功能
+        // 針對每個 Part 設置事件監聽
+        // =========================================================
+        const importJsonFiles = {};
+        const importJsonBtns = {};
+        const exportJsonBtns = {};
+
+        for (let i = 1; i <= 5; i++) {
+            importJsonFiles[`Part${i}`] = document.getElementById(`importJsonFile_Part${i}`);
+            importJsonBtns[`Part${i}`] = document.getElementById(`importJsonBtn_Part${i}`);
+            exportJsonBtns[`Part${i}`] = document.getElementById(`exportJsonBtn_Part${i}`);
+
+            if (importJsonBtns[`Part${i}`]) {
+                importJsonBtns[`Part${i}`].addEventListener('click', () => {
+                    const fileInput = importJsonFiles[`Part${i}`];
+                    if (fileInput.files.length === 0) {
+                        alert('請選擇一個 JSON 檔案。');
+                        return;
+                    }
+
+                    const file = fileInput.files[0];
+                    const reader = new FileReader();
+
+                    reader.onload = (e) => {
+                        try {
+                            const importedData = JSON.parse(e.target.result);
+                            populateFormsFromJson(importedData);
+                            alert('JSON 數據已成功載入！');
+                            // goToPart(1); // 載入後回到 Part 1，已在 populateFormsFromJson 內處理
+                        } catch (error) {
+                            alert('載入 JSON 檔案失敗，請檢查檔案格式是否正確。\n錯誤訊息: ' + error.message);
+                            console.error('Error parsing JSON:', error);
+                        }
+                    };
+
+                    reader.onerror = (error) => {
+                        alert('讀取檔案失敗。');
+                        console.error('Error reading file:', error);
+                    };
+
+                    reader.readAsText(file);
+                });
+            }
+
+            if (exportJsonBtns[`Part${i}`]) {
+                exportJsonBtns[`Part${i}`].addEventListener('click', () => {
+                    // 確保所有數據都已收集
+                    collectPart1Data();
+                    collectPart2Data(); // 確保 Part 2 最新數據已收集
+                    missionData.part3 = getPart3DataFromDOM();
+                    missionData.part4 = getPart4DataFromDOM();
+
+                    const dataStr = JSON.stringify(missionData, null, 2);
+                    const filename = `時空學園命題_${missionData.part1?.missionTitle || '未命名'}.json`;
+                    
+                    const blob = new Blob([dataStr], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                });
+            }
+        }
+
+
+        function populateFormsFromJson(data) {
+            // 清空所有 missionData
+            keyphrases = []; // 清空全局 keyphrases 數組
+            missionData.part1 = {};
+            missionData.part2 = {};
+            missionData.part3 = {};
+            missionData.part4 = {};
+
+            // Part 1
+            if (data.part1) {
+                missionTitleInput.value = data.part1.missionTitle || '';
+                
+                // Set main subject
+                const loadedMainSubject = data.part1.mainSubject;
+                if (ALL_SUBJECTS.includes(loadedMainSubject)) {
+                    mainSubjectSelect.value = loadedMainSubject;
+                    customMainSubjectInputGroup.style.display = 'none';
+                    customMainSubjectInput.value = '';
+                } else {
+                    mainSubjectSelect.value = '其他';
+                    customMainSubjectInputGroup.style.display = 'flex';
+                    customMainSubjectInput.value = loadedMainSubject;
+                }
+                // Trigger change to update other subjects checkboxes
+                mainSubjectSelect.dispatchEvent(new Event('change'));
+
+                // Populate other subjects (requires a timeout to ensure mainSubject change is processed)
+                const tempOtherSubjects = data.part1.otherSubjects || [];
+                // 暫存到 missionData.part1，generateOtherSubjectsCheckboxes 會讀取它
+                missionData.part1.otherSubjects = tempOtherSubjects; 
+
+                setTimeout(() => {
+                    // 再次觸發生成，讓其根據 missionData.part1.otherSubjects 進行設置
+                    generateOtherSubjectsCheckboxes(); 
+                    // 確保其他學科的自定義輸入框在 "其他" 被勾選時顯示正確值
+                    const otherCb = document.getElementById('subSubject_其他');
+                    if (otherCb && otherCb.checked) {
+                        const customParts = tempOtherSubjects.filter(sub => !ALL_SUBJECTS.includes(sub));
+                        if (customParts.length > 0) {
+                            customOtherSubjectInputGroup.style.display = 'flex';
+                            customOtherSubjectInput.value = customParts.join(',');
+                        }
+                    } else {
+                        customOtherSubjectInputGroup.style.display = 'none';
+                        customOtherSubjectInput.value = '';
+                    }
+
+                    // 再觸發一次 change 事件，確保所有監聽器都被觸發
+                    if (otherCb) otherCb.dispatchEvent(new Event('change'));
+
+                }, 100); // Small delay
+
+
+                document.getElementById('curriculumGuidelines').value = data.part1.curriculumGuidelines || '';
+                document.getElementById('gradeLevel').value = data.part1.gradeLevel || '';
+                document.getElementById('semesterLevel').value = data.part1.semesterLevel || '';
+                document.getElementById('location').value = data.part1.location || '';
+                document.getElementById('century').value = data.part1.century || '';
+
+                // 將載入的 data.part1 完整複製到 missionData.part1
+                Object.assign(missionData.part1, data.part1);
+            }
+
+            // Part 2
+            if (data.part2) {
+                originalTextarea.value = data.part2.originalText || '';
+                if (data.part2.keyphrases) {
+                    // 確保載入的 keyphrases 包含 color 屬性，或者在生成時賦予
+                    keyphrases = data.part2.keyphrases.map((kp, idx) => ({
+                        original: kp.original,
+                        category: kp.category,
+                        color: KEYWORD_COLORS[idx % KEYWORD_COLORS.length] // 重新賦予顏色，確保與當前主題一致
+                    }));
+                    keyphrasesTextarea.value = keyphrases.map(kp => kp.original).join('\n');
+                    generateKeyphraseCategoriesBtn.click(); // Manually trigger generation for keyphrase categories
+
+                    setTimeout(() => { // Wait for the table to generate before populating categories
+                        keyphrases.forEach((kp, idx) => {
+                            const inputElem = document.getElementById(`keyphrase_category_input_${idx}`); // 使用新 ID
+                            if (inputElem) inputElem.value = kp.category;
+                        });
+                        generateClueTextBtn.click(); // Manually trigger clue text generation
+                    }, 150); // Slightly longer delay
+                }
+                // 將載入的 data.part2 完整複製到 missionData.part2
+                Object.assign(missionData.part2, data.part2);
+            }
+
+            // Part 3 and Part 4 data are stored directly in missionData for subsequent generateForms calls
+            if (data.part3) Object.assign(missionData.part3, data.part3);
+            if (data.part4) Object.assign(missionData.part4, data.part4);
+            
+            // Trigger completion checks for Part 1 after populating
+            checkPart1Completion();
+            goToPart(1); // 載入後回到 Part 1
+        }
+
+        // =========================================================
+        // Word 匯出功能
+        // =========================================================
+        document.getElementById('exportWord').addEventListener('click', () => {
+            // 確保所有數據都已收集到 missionData 中
+            collectPart1Data();
+            collectPart2Data(); // 確保 Part 2 最新數據已收集
+            missionData.part3 = getPart3DataFromDOM();
+            missionData.part4 = getPart4DataFromDOM();
+
+            const docContent = formatDataForWord(missionData);
+            const filename = `時空學園命題_${missionData.part1?.missionTitle || '未命名'}.doc`;
+            
+            const blob = new Blob([docContent], { type: 'application/msword;charset=utf-8' });
+            saveAs(blob, filename); // Uses FileSaver.js
+        });
+
+        function formatDataForWord(data) {
+            let content = '';
+
+            content += '===================================================\r\n';
+            content += `時空學園命題設計引導系統\r\n`;
+            content += '===================================================\r\n\r\n';
+
+            // Part 1
+            content += '--- Part 1: 基礎任務設定 ---\r\n';
+            if (data.part1) {
+                content += `任務名稱: ${data.part1.missionTitle || '未填寫'}\r\n`;
+                content += `主要學科: ${data.part1.mainSubject || '未選擇'}\r\n`;
+                content += `其他學科: ${(data.part1.otherSubjects || []).join(', ') || '無'}\r\n`;
+                content += `課綱: ${data.part1.curriculumGuidelines || '未填寫'}\r\n`;
+                content += `等級: ${data.part1.gradeLevel || '未選擇'}${data.part1.semesterLevel || '未選擇'}\r\n`;
+                content += `地點: ${data.part1.location || '未填寫'}\r\n`;
+                content += `世紀: ${data.part1.century || '未填寫'}\r\n`;
+            }
+            content += '\r\n';
+
+            // Part 2
+            content += '--- Part 2: 線索文本轉換 ---\r\n';
+            if (data.part2) {
+                content += `原始線索文本:\r\n${data.part2.originalText || '無'}\r\n\r\n`;
+                // 移除 HTML 標籤以便在純文本 Word 中顯示
+                content += `線索文本 (後臺預覽):\r\n${data.part2.clueTextHtml?.replace(/<[^>]*>?/gm, '') || '無'}\r\n\r\n`;
+                content += `關鍵詞定義:\r\n`;
+                (data.part2.keyphrases || []).forEach(kp => {
+                    content += `- ${kp.original} -> [[$${kp.category}]]\r\n`;
+                });
+            }
+            content += '\r\n';
+
+            // Part 3
+            content += '--- Part 3: 設計答案與提示系統 ---\r\n';
+            if (data.part3 && Object.keys(data.part3).length > 0) {
+                for (const keyphrase in data.part3) {
+                    const item = data.part3[keyphrase];
+                    content += `\r\n關鍵詞: ${keyphrase}\r\n`;
+                    content += `  最終解答說明: ${item.explanation || '未填寫'}\r\n`;
+                    content += `  第一層提示 (文字內容): ${item.hint1_textContent || '未填寫'}\r\n`;
+                    content += `  第二層提示 (正確知識卡鷹架提示): ${item.hint2_knowledgeCardScaffold || '未填寫'}\r\n`;
+                    content += `  第三層提示 (整體鷹架提示): ${item.hint3_overallScaffold || '未填寫'}\r\n`;
+                }
+            } else {
+                content += '無 Part 3 數據。\r\n';
+            }
+            content += '\r\n';
+
+            // Part 4
+            content += '--- Part 4: 建立知識卡組 ---\r\n';
+            if (data.part4 && Object.keys(data.part4).length > 0) {
+                for (const keyphrase in data.part4) {
+                    const cardSet = data.part4[keyphrase];
+                    content += `\r\n**關鍵詞: ${keyphrase} 的知識卡組**\r\n`;
+
+                    // Correct Card
+                    content += `  **A. 正確知識卡: ${cardSet.correctCard?.cardName || '無'}**\r\n`;
+                    content += `    圖片URL: ${cardSet.correctCard?.imageUrl || '無'}\r\n`;
+                    content += `    類別: ${cardSet.correctCard?.category || '未選擇'}\r\n`;
+                    content += `    文字內容 (定義): ${cardSet.correctCard?.textContent || '未填寫'}\r\n`;
+                    content += `    外部資訊: ${cardSet.correctCard?.externalInfo || '無'}\r\n`;
+                    content += `    線索說明: ${cardSet.correctCard?.clueDescription || '無'}\r\n`;
+                    content += `    鷹架提示: ${cardSet.correctCard?.scaffoldingHint || '無'}\r\n`;
+
+                    // Incorrect Cards
+                    content += `  **B. 錯誤知識卡組**\r\n`;
+                    if (cardSet.incorrectCards && cardSet.incorrectCards.length > 0) {
+                        (cardSet.incorrectCards || []).forEach((incCard, idx) => {
+                            content += `    錯誤卡 ${idx + 1}:\r\n`;
+                            content += `      卡片名稱: ${incCard.cardName || '無'}\r\n`;
+                            content += `      圖片URL: ${incCard.imageUrl || '無'}\r\n`;
+                            content += `      類別: ${incCard.category || '未選擇'}\r\n`;
+                            content += `      文字內容 (定義): ${incCard.textContent || '未填寫'}\r\n`;
+                            content += `      外部資訊: ${incCard.externalInfo || '無'}\r\n`;
+                        });
+                    } else {
+                        content += `    無錯誤卡數據。\r\n`;
+                    }
+                }
+            } else {
+                content += '無 Part 4 數據。\r\n';
+            }
+            content += '\r\n';
+
+            content += '===================================================\r\n';
+            content += 'Copyright © Liyuchiutiger Gongminshen\r\n';
+            content += '===================================================\r\n';
+
+            return content;
+        }
+
+        // =========================================================
+        // 吉祥物互動與粒子效果
+        // =========================================================
+        const mascotWrapper = document.getElementById('mascotWrapper');
+
+        // 初始化 tsParticles
+        tsParticles.load("tsparticles", {
+            fpsLimit: 60,
+            background: {
+                color: {
+                    value: "transparent", // 讓 body 背景色顯示
+                },
+            },
+            interactivity: {
+                events: {
+                    onHover: {
+                        enable: true,
+                        mode: "bubble", // 懸停時粒子泡泡效果
+                        parallax: {
+                            enable: true,
+                            force: 60,
+                            smooth: 10
+                        }
+                    },
+                    onClick: {
+                        enable: false, // 全局點擊不再觸發，由吉祥物單獨控制
+                    },
+                    resize: true,
+                },
+                modes: {
+                    bubble: {
+                        distance: 200,
+                        size: 8,
+                        duration: 2,
+                        opacity: 0.8,
+                        speed: 3,
+                        color: {
+                            value: ["#ffffff", "var(--primary-ui-blue)"]
+                        }
+                    },
+                },
+            },
+            particles: {
+                color: {
+                    value: ["rgb(200, 230, 255)", "rgb(240, 240, 255)"], // 淺藍色和白色混合粒子
+                },
+                links: {
+                    color: "rgb(200, 230, 255)",
+                    distance: 120,
+                    enable: true,
+                    opacity: 0.2, /* 較低的透明度 */
+                    width: 0.5,
+                },
+                move: {
+                    direction: "none",
+                    enable: true,
+                    outModes: {
+                        default: "bounce",
+                    },
+                    random: true,
+                    speed: 0.5, /* 緩慢移動 */
+                    straight: false,
+                    attract: { enable: false, rotateX: 600, rotateY: 1200 },
+                },
+                number: {
+                    density: {
+                        enable: true,
+                        area: 1000,
+                    },
+                    value: 60, /* 粒子數量 */
+                },
+                opacity: {
+                    value: { min: 0.2, max: 0.9 },
+                    animation: {
+                        enable: true,
+                        speed: 0.5,
+                        minimumValue: 0.1,
+                        sync: false,
+                    },
+                },
+                shape: {
+                    type: "circle",
+                },
+                size: {
+                    value: { min: 0.8, max: 2.5 },
+                    animation: {
+                        enable: true,
+                        speed: 1,
+                        minimumValue: 0.5,
+                        sync: false,
+                    },
+                },
+            },
+            detectRetina: true,
+        });
+
+        // 點擊吉祥物觸發粒子噴射效果
+        mascotWrapper.addEventListener('click', (event) => {
+             tsParticles.dom().forEach(container => {
+                if (container) {
+                    const mascotRect = mascotWrapper.getBoundingClientRect();
+                    const clickX = mascotRect.left + mascotRect.width / 2;
+                    const clickY = mascotRect.top + mascotRect.height / 2;
+
+                    for (let i = 0; i < 40; i++) { // 噴射40個粒子
+                        container.particles.addParticle({
+                            x: clickX,
+                            y: clickY,
+                            options: {
+                                color: { value: ["var(--accent-yellow)", "var(--primary-ui-blue)", "var(--ui-success-green)"] }, /* 鮮豔的顏色混合 (UI強調色) */
+                                size: { value: { min: 4, max: 12 } },
+                                life: { duration: { value: 0.7 } },
+                                move: {
+                                    speed: { min: 10, max: 25 }, /* 更快的移動速度 */
+                                    direction: "random",
+                                    enable: true,
+                                    outModes: "destroy",
+                                    decay: 0.05, /* 粒子逐漸減速 */
+                                },
+                                opacity: { value: 1, animation: { enable: true, speed: 1, minimumValue: 0, sync: false, startValue: "max", destroy: "min" } },
+                            }
+                        });
+                    }
+                }
+            });
+            console.log("Mascot clicked! Custom particles should burst.");
+        });
+
+        // =========================================================
+        // 頁面初始化
+        // =========================================================
+        document.addEventListener('DOMContentLoaded', () => {
+            goToPart(1); // 默認顯示 Part 1
+            
+            // 初始化其他學科選項（考慮到預設選中的主學科）
+            generateOtherSubjectsCheckboxes();
+
+            // 確保 customMainSubjectInputGroup 初始狀態正確
+            if (mainSubjectSelect.value === '其他') {
+                customMainSubjectInputGroup.style.display = 'flex';
+            } else {
+                customMainSubjectInputGroup.style.display = 'none';
+            }
+
+            // 初始化 Part 1 按鈕狀態
+            checkPart1Completion();
+
+            // 初始化 Part 2 的關鍵詞輸入框字數計數器和按鈕狀態
+            setupWordCounter('keyphrasesInput', 'keyphrasesInput_counter', -1); // 新增字數計數器初始化
+            checkGenerateKeyphraseCategoriesBtn();
+            checkProceedToPart3Btn(); // 確保 Part3 按鈕初始化禁用
+        });
+    </script>
+</body>
+</html>
