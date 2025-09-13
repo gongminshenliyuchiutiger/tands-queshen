@@ -50,7 +50,7 @@
             --text-dark-rgb: 25, 25, 25;
             --border-light-rgb: 200, 215, 230;
 
-            /* Starry background colors for CSS pseudo-elements */
+            /* Starry background colors for CSS pseudo-elements (now used by tsparticles) */
             --star-color-1: rgba(255, 220, 0, 0.7); /* Yellow */
             --star-color-2: rgba(0, 160, 255, 0.7); /* Blue */
             --star-color-3: rgba(100, 255, 100, 0.7); /* Green */
@@ -59,12 +59,8 @@
             --star-color-6: rgba(255, 255, 255, 0.7); /* White */
         }
 
-        /* Starry background animation */
-        @keyframes floatStars {
-            0% { transform: translate(0, 0) rotate(0deg); opacity: 0.6; }
-            33% { transform: translate(10vw, 15vh) rotate(120deg); opacity: 0.8; }
-            66% { transform: translate(-10vw, -15vh) rotate(240deg); opacity: 0.7; }
-            100% { transform: translate(0, 0) rotate(360deg); opacity: 0.6; }
+        html, body {
+            height: 100%; /* Ensure full height for fixed background */
         }
 
         body {
@@ -72,42 +68,26 @@
             line-height: 1.6;
             margin: 0;
             padding: 20px;
-            /* Light background with gradient */
-            background-color: var(--bg-light);
-            background-image: linear-gradient(135deg, var(--bg-light) 0%, rgb(230, 240, 250) 100%);
+            /* Make body background transparent to show tsparticles */
+            background-color: transparent;
+            background-image: none;
             color: var(--text-dark);
             padding-bottom: 80px;
             overflow-x: hidden;
             position: relative;
-            z-index: 1; /* Ensure body content is above stars container */
+            /* z-index removed from body, rely on container's z-index for content */
         }
 
-        /* Star container for CSS-based stars */
-        #star-container {
+        /* tsparticles container itself needs to cover the viewport and be behind content */
+        #tsparticles {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1; /* Behind body content */
+            z-index: -2; /* Behind all body content and footer */
             pointer-events: none; /* Make sure it doesn't block clicks */
-            overflow: hidden; /* Prevent stars from showing outside */
-            /* Dark background layer for stars */
-            background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
-            opacity: 0.8; /* Subtle dark overlay for stars */
         }
-
-        /* Generated stars/symbols */
-        .star {
-            position: absolute;
-            animation: floatStars linear infinite;
-            user-select: none;
-            font-family: "Font Awesome 6 Free";
-            font-weight: 900;
-        }
-
-        /* --- END OF STAR CSS --- */
-
 
         .container {
             max-width: 1000px;
@@ -118,7 +98,7 @@
             box-shadow: var(--shadow-container);
             border: 1px solid var(--border-light);
             position: relative;
-            z-index: 2; /* Ensure container is above stars */
+            z-index: 2; /* Ensure container is above particles */
         }
 
         h1, h2, h3, h4, h5 {
@@ -136,6 +116,25 @@
             font-size: 2.2em;
             color: var(--primary-ui-blue);
             border-bottom-color: var(--primary-ui-blue);
+            display: flex; /* For aligning text and icon */
+            align-items: center; /* Vertically center items */
+            justify-content: center; /* Horizontally center content */
+        }
+
+        h1 i.fa-rocket {
+            margin-right: 10px; /* Space between rocket icon and text */
+        }
+
+        #help-link-in-h1 {
+            color: var(--accent-teal); /* Use accent color for consistency */
+            font-size: 0.8em; /* Adjust size to fit H1 better */
+            text-decoration: none;
+            transition: color 0.2s ease, transform 0.2s ease;
+            margin-left: 15px; /* Space from title */
+        }
+        #help-link-in-h1:hover {
+            color: rgb(0, 140, 140); /* Darker teal on hover */
+            transform: scale(1.1);
         }
 
         h2 {
@@ -176,6 +175,11 @@
             font-weight: bold;
             color: var(--text-dark);
         }
+        /* Spacing for icons within labels */
+        label .fas {
+            margin-right: 8px;
+        }
+
         .required-star {
             color: var(--ui-error-red);
             margin-left: 3px;
@@ -232,8 +236,8 @@
 
         #knowledgeCardSets input[type="text"].color-0 { color: var(--answer-red); }
         #knowledgeCardSets input[type="text"].color-1 { color: var(--answer-green); }
-        #knowledgeCardSets input[type="text"].color-2 { color: var(--answer-blue); }
-        #knowledgeCardSets input[type="text"].color-3 { color: var(--answer-purple); }
+        #knowledgeCardSets input[type="text"][readonly].color-2 { color: var(--answer-blue); }
+        #knowledgeCardSets input[type="text"][readonly].color-3 { color: var(--answer-purple); }
 
 
         .select-group {
@@ -732,28 +736,62 @@
         .modal-content a:hover {
             text-decoration: underline;
         }
-        /* Modal Close Button - Completely transparent, only X icon */
+
+        /* Modal Close Button - Global styles for both modals' 'X' buttons */
         .modal-close {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            font-size: 1.8em;
-            color: var(--primary-ui-blue); /* Blue X icon */
-            background: transparent; /* No background */
+            background-color: transparent; /* Explicitly transparent */
             border: none; /* No border */
             box-shadow: none; /* No shadow */
+            outline: none; /* No outline */
             cursor: pointer;
-            transition: color 0.2s ease, transform 0.2s ease;
-            width: 30px;
-            height: 30px;
+            width: 30px; /* Fixed width for better click area */
+            height: 30px; /* Fixed height for better click area */
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 1.8em; /* Consistent font size */
+            color: var(--primary-ui-blue); /* Default blue color */
+            transition: color 0.2s ease, transform 0.2s ease; /* Smooth transition */
+            padding: 0; /* Remove default button padding */
+            line-height: 1; /* Center the 'X' icon better */
+            /* Ensure no browser-specific focus outline for Firefox */
+            -moz-focus-inner: { border: 0; }
         }
+        /* Hover, Focus, Active states for modal-close */
+        .modal-close:hover,
+        .modal-close:focus,
+        .modal-close:active {
+            background-color: transparent; /* Ensure no background on interaction */
+            border: none; /* Ensure no border on interaction */
+            box-shadow: none; /* Ensure no shadow on interaction */
+            outline: none; /* Ensure no outline on interaction */
+        }
+        /* Only apply transform and color change on hover */
         .modal-close:hover {
-            transform: scale(1.1);
-            color: var(--ui-error-red); /* Red X on hover */
+            transform: scale(1.1); /* Enlarge on hover */
+            color: var(--ui-error-red); /* Red on hover */
         }
+        /* For focus/active states without hover, keep default blue and no scale */
+        .modal-close:focus,
+        .modal-close:active {
+            transform: none;
+            color: var(--primary-ui-blue);
+        }
+
+
+        /* Specific positioning for API Key Tutorial Modal's close button */
+        #apiKeyTutorialModal .modal-close {
+            position: absolute; /* Absolute positioning within its parent modal-content */
+            top: 15px;
+            right: 15px;
+        }
+
+        /* Specific positioning for Help Modal's close button */
+        #help-modal .modal-close {
+            position: static; /* Let it flow within the flex header */
+            margin-left: auto; /* Push to the right within the flex container */
+        }
+
 
         /* Loading spinner for AI buttons */
         @keyframes spin {
@@ -973,31 +1011,6 @@
             margin-bottom: 0;
         }
 
-        /* Help Button in Top Right */
-        #help-button {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1500;
-            background-color: var(--accent-teal);
-            color: white;
-            padding: 10px 15px;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            font-size: 1em;
-            box-shadow: var(--shadow-button);
-            transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        #help-button:hover {
-            background-color: rgb(0, 140, 140);
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-button-hover);
-        }
-
         /* Help Modal (Draggable/Resizable) */
         #help-modal {
             position: fixed;
@@ -1038,18 +1051,7 @@
             font-size: 1.3em;
             color: var(--primary-ui-blue);
         }
-        #help-modal .modal-close {
-            position: static;
-            margin-left: auto;
-            color: var(--primary-ui-blue);
-            background: transparent;
-            border: none;
-            box-shadow: none; /* Ensure no shadow on close button itself */
-            font-size: 1.5em;
-        }
-        #help-modal .modal-close:hover {
-            color: var(--ui-error-red);
-        }
+
         #help-modal .modal-content-body {
             font-size: 0.95em;
             color: var(--text-dark);
@@ -1096,6 +1098,15 @@
             }
             h1 {
                 font-size: 1.8em;
+                flex-direction: column; /* Stack H1 elements vertically on small screens */
+                gap: 5px;
+            }
+            h1 i.fa-rocket {
+                margin-right: 0;
+            }
+            #help-link-in-h1 {
+                margin-left: 0; /* No margin on smaller screens if stacked */
+                font-size: 1em; /* Adjust size for mobile */
             }
             h2 {
                 font-size: 1.4em;
@@ -1182,12 +1193,7 @@
                 min-width: unset;
             }
 
-            #help-button {
-                top: 10px;
-                right: 10px;
-                padding: 8px 12px;
-                font-size: 0.9em;
-            }
+            /* Help button removed, no need for #help-button responsive adjustments */
             #help-modal {
                 width: 90vw;
                 height: 80vh;
@@ -1219,7 +1225,13 @@
     <div id="tsparticles"></div>
 
     <div class="container">
-        <h1><i class="fas fa-rocket"></i> 時空學園命題設計引導系統</h1>
+        <h1>
+            <i class="fas fa-rocket"></i>
+            時空學園命題設計引導系統
+            <a href="#" id="help-link-in-h1" title="使用說明">
+                <i class="fas fa-circle-info"></i>
+            </a>
+        </h1>
         <p>歡迎來到時空學園命題設計引導系統！本系統將帶您一步步了解如何為「時空學園」遊戲設計引人入勝且具備教育意義的題目。我們的核心策略是「<strong>多層次逐步揭示資訊</strong>」，透過循序漸進的提示，引導學生思考、學習，並最終掌握知識。</p>
 
         <!-- API Key Setup Section -->
@@ -1484,9 +1496,6 @@
         </div>
         <div class="right-content"></div>
     </footer>
-
-    <!-- Help Button in Top Right -->
-    <button id="help-button"><i class="fas fa-circle-info"></i> 使用說明</button>
 
     <!-- API Key Tutorial Modal -->
     <div id="apiKeyTutorialModal" class="modal-overlay" style="display: none;">
@@ -1959,7 +1968,7 @@
             if (finalIsOtherChecked) {
                 customOtherSubjectInputGroup.style.display = 'flex';
                 if (customOtherSubjectValues) {
-                    customOtherSubjectInput.value = customOtherSubjectValues;
+                    customOtherSubjectInput.value = customOtherOtherSubjectValues;
                 }
             } else {
                 customOtherSubjectInputGroup.style.display = 'none';
@@ -2142,7 +2151,7 @@
                 const inputId = `keyphrase_category_input_${idx}`;
                 const categoryInput = document.createElement('input');
                 categoryInput.type = 'text';
-                categoryInput.id = inputId;
+categoryInput.id = inputId;
                 categoryInput.value = kp.category || '';
                 categoryInput.placeholder = '請定義變數類別*';
                 categoryInput.required = true;
@@ -2806,7 +2815,8 @@
                     </div>
                     <div class="form-group">
                         <div class="label-with-ai-button">
-                            <label for="${cardId}_textcontent">文字內容 (定義):<span class="required-star">*</span></label>
+                            <!-- 新增圖示到文字內容定義標籤 -->
+                            <label for="${cardId}_textcontent"><i class="fas fa-file-lines"></i> 文字內容 (定義):<span class="required-star">*</span></label>
                             <button type="button" class="ai-button inline-small" id="${cardId}_generate_text_ai_button" ${!currentApiKey || !cardNameValue.trim() ? 'disabled' : ''}>
                                 <i class="fas fa-wand-magic-sparkles"></i>
                             </button>
@@ -3242,7 +3252,7 @@
                             content += `      卡片名稱: ${incCard.cardName || '無'}\r\n`;
                             content += `      學科: ${incCard.subject || '未選擇'}\r\n`;
                             content += `      圖片URL: ${incCard.imageUrl || '無'}\r\n`;
-                            content += `      類別: ${incCard.category || '未選擇'}\r\n`;
+                            content += `      類別: ${incCard.cardCategory || '未選擇'}\r\n`;
                             content += `      文字內容 (定義): ${incCard.textContent || '未填寫'}\r\n`;
                             content += `      外部資訊: ${incCard.externalInfo || '無'}\r\n`;
                         });
@@ -3299,103 +3309,137 @@
         // 頁面初始化
         // =========================================================
         document.addEventListener('DOMContentLoaded', () => {
-            // Initialize Particles.js for starry background
-            // The tsParticles CDN is now correctly included in the HTML head
-            tsParticles.load("tsparticles", {
-                fpsLimit: 60,
-                background: {
-                    color: {
-                        value: "transparent", // Transparent to show body's linear-gradient
+            // Initialize Particles.js for starry background with a slight delay
+            // to ensure Font Awesome font is fully loaded.
+            setTimeout(() => {
+                tsParticles.load("tsparticles", {
+                    fpsLimit: 60,
+                    // Add background configuration directly to tsparticles
+                    background: {
+                        color: {
+                            value: "#090A0F", // Fallback dark color for the particles canvas
+                        },
+                        image: "radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%)", // Use this gradient as background
+                        repeat: "no-repeat",
+                        size: "cover",
+                        position: "50% 50%",
+                        opacity: 1 // Ensure gradient is fully opaque
                     },
-                    opacity: 1 // Background opacity
-                },
-                interactivity: {
-                    events: {
-                        onHover: {
-                            enable: true,
-                            mode: "grab", // Allow grabbing particles
-                            parallax: {
+                    interactivity: {
+                        events: {
+                            onHover: {
                                 enable: true,
-                                force: 60,
-                                smooth: 10
+                                mode: "grab", // Allow grabbing particles
+                                parallax: {
+                                    enable: true,
+                                    force: 60,
+                                    smooth: 10
+                                }
+                            },
+                            onClick: {
+                                enable: false, // Particles no longer burst on general click
+                            },
+                            resize: true,
+                        },
+                        modes: {
+                            grab: {
+                                distance: 150,
+                                links: {
+                                    opacity: 0.4
+                                }
+                            },
+                            bubble: { // Still available if needed for other hover effects
+                                distance: 200,
+                                size: 8,
+                                duration: 2,
+                                opacity: 0.8,
+                                color: {
+                                    value: ["#ffffff", "var(--primary-ui-blue)"]
+                                }
+                            },
+                        },
+                    },
+                    particles: {
+                        color: {
+                            // Correctly use the CSS variables for color values
+                            value: ["var(--star-color-1)", "var(--star-color-2)", "var(--star-color-3)", "var(--star-color-4)", "var(--star-color-5)", "var(--star-color-6)", "#ffffff", "#cccccc", "#eeeeee"], 
+                        },
+                        links: {
+                            color: "#cccccc", // Links will be light gray
+                            distance: 120,
+                            enable: true,
+                            opacity: 0.1, /* Very subtle links */
+                            width: 0.5,
+                        },
+                        move: {
+                            direction: "none",
+                            enable: true,
+                            outModes: {
+                                default: "bounce",
+                            },
+                            random: true,
+                            speed: 0.3, /* Slower movement */
+                            straight: false,
+                            attract: { enable: false, rotateX: 600, rotateY: 1200 },
+                        },
+                        number: {
+                            density: {
+                                enable: true,
+                                area: 1000,
+                            },
+                            value: 80, /* More particles */
+                        },
+                        opacity: {
+                            value: { min: 0.1, max: 0.7 },
+                            animation: {
+                                enable: true,
+                                speed: 0.5,
+                                minimumValue: 0.05,
+                                sync: false,
+                            },
+                        },
+                        shape: {
+                            type: "text", // Change shape type to text
+                            options: {
+                                text: {
+                                    /* Font Awesome unicode icons (Solid style) - ensure Font Awesome 6 is loaded
+                                       一些科幻或知識相關的圖標：
+                                       \uf005 - 星星 (star)
+                                       \uf753 - 彗星 (meteor)
+                                       \uf5a0 - 衛星 (satellite-dish)
+                                       \uf5d2 - 原子 (atom)
+                                       \uf121 - 程式碼 (code)
+                                       \uf186 - 月亮 (moon)
+                                       \uf02d - 書本 (book)
+                                       \uf0ac - 地球 (globe)
+                                       \uf10a - 電腦 (desktop)
+                                       \uf111 - 圓圈 (circle)
+                                       \uf251 - 懷錶 (watch)
+                                       \uf0c2 - 雲端 (cloud)
+                                       \uf520 - 晶片 (microchip)
+                                       \uf135 - 飛機 (plane)
+                                    */
+                                    value: ["\uf005", "\uf753", "\uf5a0", "\uf5d2", "\uf121", "\uf186", "\uf02d", "\uf0ac", "\uf10a", "\uf111", "\uf251", "\uf0c2", "\uf520", "\uf135"], 
+                                    font: "Font Awesome 6 Free", // Specify Font Awesome font family name
+                                    weight: "900", // Font weight for Solid icons
+                                    style: "normal"
+                                }
                             }
                         },
-                        onClick: {
-                            enable: false, // Particles no longer burst on general click
-                        },
-                        resize: true,
-                    },
-                    modes: {
-                        grab: {
-                            distance: 150,
-                            links: {
-                                opacity: 0.4
-                            }
-                        },
-                        bubble: { // Still available if needed for other hover effects
-                            distance: 200,
-                            size: 8,
-                            duration: 2,
-                            opacity: 0.8,
-                            color: {
-                                value: ["#ffffff", "var(--primary-ui-blue)"]
-                            }
+                        size: {
+                            value: { min: 12, max: 30 }, // Adjust size for better visibility of symbols
+                            animation: {
+                                enable: true,
+                                speed: 1,
+                                minimumValue: 5, // Minimum size for symbols
+                                sync: false,
+                            },
                         },
                     },
-                },
-                particles: {
-                    color: {
-                        value: ["#ffffff", "#cccccc", "#eeeeee", "var(--particle-color-1)", "var(--particle-color-2)", "var(--particle-color-3)", "var(--particle-color-4)", "var(--particle-color-5)", "var(--particle-color-6)"], // Use various shades and custom colors
-                    },
-                    links: {
-                        color: "#cccccc", // Links will be light gray
-                        distance: 120,
-                        enable: true,
-                        opacity: 0.1, /* Very subtle links */
-                        width: 0.5,
-                    },
-                    move: {
-                        direction: "none",
-                        enable: true,
-                        outModes: {
-                            default: "bounce",
-                        },
-                        random: true,
-                        speed: 0.3, /* Slower movement */
-                        straight: false,
-                        attract: { enable: false, rotateX: 600, rotateY: 1200 },
-                    },
-                    number: {
-                        density: {
-                            enable: true,
-                            area: 1000,
-                        },
-                        value: 80, /* More particles */
-                    },
-                    opacity: {
-                        value: { min: 0.1, max: 0.7 },
-                        animation: {
-                            enable: true,
-                            speed: 0.5,
-                            minimumValue: 0.05,
-                            sync: false,
-                        },
-                    },
-                    shape: {
-                        type: "circle", // Simple circles for "stars"
-                    },
-                    size: {
-                        value: { min: 0.5, max: 2 }, /* Smaller, subtle stars */
-                        animation: {
-                            enable: true,
-                            speed: 1,
-                            minimumValue: 0.3,
-                            sync: false,
-                        },
-                    },
-                },
-                detectRetina: true,
-            });
+                    detectRetina: true,
+                });
+            }, 100); // 100ms delay
+
 
             goToPart(1); // Default to display Part 1
             
@@ -3427,8 +3471,9 @@
 
         // =========================================================
         // Help Modal (Draggable and Resizable)
+        // Updated event listener for help link
         // =========================================================
-        const helpButton = document.getElementById('help-button');
+        const helpLinkInH1 = document.getElementById('help-link-in-h1');
         const helpModal = document.getElementById('help-modal');
         const closeHelpModalButton = document.getElementById('close-help-modal');
         const helpModalHeader = helpModal.querySelector('.modal-header');
@@ -3442,50 +3487,55 @@
         let initialMouseY = 0;
         let currentZIndex = 2100; // Starting z-index for modals, incremented when brought to front
 
-        helpButton.addEventListener('click', () => {
-            helpModal.style.display = 'block';
-            helpModal.style.zIndex = ++currentZIndex; // Bring to front
-            
-            // Re-center if it's the first time or after a resize
-            if (helpModal.style.transform === 'translate(-50%, -50%)' || helpModal.dataset.initialLoad === undefined) {
-                helpModal.style.left = '50%';
-                helpModal.style.top = '50%';
-                helpModal.style.transform = 'translate(-50%, -50%)';
-                helpModal.dataset.initialLoad = 'false'; // Mark as loaded
-            }
+        // Updated event listener
+        if (helpLinkInH1) {
+            helpLinkInH1.addEventListener('click', (e) => {
+                e.preventDefault(); // Prevent default link behavior
+                helpModal.style.display = 'block';
+                helpModal.style.zIndex = ++currentZIndex; // Bring to front
+                
+                // Re-center if it's the first time or after a resize
+                if (helpModal.style.transform === 'translate(-50%, -50%)' || helpModal.dataset.initialLoad === undefined) {
+                    helpModal.style.left = '50%';
+                    helpModal.style.top = '50%';
+                    helpModal.style.transform = 'translate(-50%, -50%)';
+                    helpModal.dataset.initialLoad = 'false'; // Mark as loaded
+                }
 
-            // Ensure modal is within viewport if it went off-screen
-            const viewportWidth = window.innerWidth;
-            const viewportHeight = window.innerHeight;
-            let modalRect = helpModal.getBoundingClientRect(); // Get fresh dimensions
+                // Ensure modal is within viewport if it went off-screen
+                const viewportWidth = window.innerWidth;
+                const viewportHeight = window.innerHeight;
+                let modalRect = helpModal.getBoundingClientRect(); // Get fresh dimensions
 
-            // Adjust position if it's completely off-screen or too far right/bottom
-            let currentLeft = parseFloat(helpModal.style.left) || 0;
-            let currentTop = parseFloat(helpModal.style.top) || 0;
+                // Adjust position if it's completely off-screen or too far right/bottom
+                let currentLeft = parseFloat(helpModal.style.left) || 0;
+                let currentTop = parseFloat(helpModal.style.top) || 0;
 
-            // If modal's position is still based on transform, calculate actual left/top
-            if (helpModal.style.transform.includes('translate')) {
-                currentLeft = modalRect.left;
-                currentTop = modalRect.top;
-            }
+                // If modal's position is still based on transform, calculate actual left/top
+                if (helpModal.style.transform.includes('translate')) {
+                    currentLeft = modalRect.left;
+                    currentTop = modalRect.top;
+                }
 
-            if (currentLeft + modalRect.width > viewportWidth || currentLeft < 0) {
-                helpModal.style.left = `${Math.max(20, viewportWidth - modalRect.width - 20)}px`;
-                helpModal.style.transform = 'none'; // Clear transform if setting explicit left
-            }
-            if (currentTop + modalRect.height > viewportHeight || currentTop < 0) {
-                helpModal.style.top = `${Math.max(20, viewportHeight - modalRect.height - 20)}px`;
-                helpModal.style.transform = 'none'; // Clear transform if setting explicit top
-            }
+                if (currentLeft + modalRect.width > viewportWidth || currentLeft < 0) {
+                    helpModal.style.left = `${Math.max(20, viewportWidth - modalRect.width - 20)}px`;
+                    helpModal.style.transform = 'none'; // Clear transform if setting explicit left
+                }
+                if (currentTop + modalRect.height > viewportHeight || currentTop < 0) {
+                    helpModal.style.top = `${Math.max(20, viewportHeight - modalRect.height - 20)}px`;
+                    helpModal.style.transform = 'none'; // Clear transform if setting explicit top
+                }
 
-            // Also constrain initial size if it's larger than viewport
-            if (modalRect.width > viewportWidth - 40) {
-                helpModal.style.width = `${viewportWidth - 40}px`;
-            }
-            if (modalRect.height > viewportHeight - 40) {
-                helpModal.style.height = `${viewportHeight - 40}px`;
-            }
-        });
+                // Also constrain initial size if it's larger than viewport
+                if (modalRect.width > viewportWidth - 40) {
+                    helpModal.style.width = `${viewportWidth - 40}px`;
+                }
+                if (modalRect.height > viewportHeight - 40) {
+                    helpModal.style.height = `${viewportHeight - 40}px`;
+                }
+            });
+        }
+
 
         closeHelpModalButton.addEventListener('click', () => {
             helpModal.style.display = 'none';
