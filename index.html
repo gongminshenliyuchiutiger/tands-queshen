@@ -137,6 +137,49 @@
             transform: scale(1.1);
         }
 
+        /* NEW: Styles for the new links under H1 */
+        .h1-sub-links {
+            text-align: center;
+            margin-top: 10px;
+            margin-bottom: 25px; /* Add some space before the main paragraph */
+            display: flex; /* Use flexbox for horizontal alignment */
+            flex-direction: row; /* Default to row for wider screens */
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+            justify-content: center; /* Center the links */
+            align-items: center;
+        }
+
+        .h1-sub-links a {
+            color: var(--accent-teal);
+            font-size: 0.95em; /* Slightly smaller than main text */
+            text-decoration: none;
+            transition: color 0.2s ease, transform 0.2s ease;
+            display: inline-flex; /* Align icon and text */
+            align-items: center;
+            white-space: nowrap; /* Prevent text from wrapping within a link */
+            padding: 5px 10px; /* Add some padding for touch targets */
+        }
+
+        .h1-sub-links a i {
+            margin-right: 8px;
+            font-size: 1.1em; /* Make icons slightly larger */
+        }
+
+        .h1-sub-links a:hover {
+            color: rgb(0, 140, 140); /* Darker teal on hover */
+            transform: translateY(-1px);
+            text-decoration: underline;
+        }
+
+        /* Separator style */
+        .h1-sub-links .separator {
+            color: var(--accent-gray); /* Grey color for the separator */
+            margin: 0 10px; /* Space around the separator */
+            font-size: 0.95em;
+        }
+        /* END NEW STYLES */
+
+
         h2 {
             font-size: 1.6em;
             color: var(--accent-teal);
@@ -1108,6 +1151,17 @@
                 margin-left: 0; /* No margin on smaller screens if stacked */
                 font-size: 1em; /* Adjust size for mobile */
             }
+            /* NEW: Responsive for sub-links */
+            .h1-sub-links {
+                flex-direction: column; /* Stack links vertically on small screens */
+                gap: 8px; /* Space between stacked links */
+                margin-bottom: 20px;
+                font-size: 0.9em;
+            }
+            .h1-sub-links .separator {
+                display: none; /* Hide separator when stacked */
+            }
+            /* END NEW */
             h2 {
                 font-size: 1.4em;
             }
@@ -1208,6 +1262,9 @@
             }
             h1 { font-size: 1.6em; }
             h2 { font-size: 1.2em; }
+            .h1-sub-links {
+                font-size: 0.85em;
+            }
             .modal-content {
                 padding: 15px;
             }
@@ -1232,6 +1289,17 @@
                 <i class="fas fa-circle-info"></i>
             </a>
         </h1>
+        <!-- NEW: Links below H1 -->
+        <div class="h1-sub-links">
+            <a href="https://sites.google.com/aiv.com.tw/time-warrior-academy/" target="_blank" rel="noopener noreferrer">
+                <i class="fas fa-globe"></i> 《時空學園》官方網站
+            </a>
+            <span class="separator">|</span>
+            <a href="https://reurl.cc/86Lv6j" target="_blank" rel="noopener noreferrer">
+                <i class="fas fa-folder-open"></i> 《時空學園》命題資源
+            </a>
+        </div>
+        <!-- END NEW -->
         <p>歡迎來到時空學園命題設計引導系統！本系統將帶您一步步了解如何為「時空學園」遊戲設計引人入勝且具備教育意義的題目。我們的核心策略是「<strong>多層次逐步揭示資訊</strong>」，透過循序漸進的提示，引導學生思考、學習，並最終掌握知識。</p>
 
         <!-- API Key Setup Section -->
@@ -1548,7 +1616,7 @@
                                 <li>**最終解答說明：** 完整的解釋。</li>
                                 <li>**第一層提示 (12字內)：** 最直接的文字提示。</li>
                                 <li>**第二層提示 (25字內)：** 正確知識卡鷹架提示，提供背景或情境。</li>
-                                <li>**第三層提示 (25字內)：** 最廣泛的整體鷹架提示，幫助思考方向。</li>
+                                <li>**第三層提示 (25字內)：** 最廣泛的整體鷹架提示，幫助玩家從大方向思考。</li>
                             </ol>
                         </li>
                         <li>可以使用 **「AI 生成提示」** 按鈕來協助生成這些內容。</li>
@@ -1582,13 +1650,7 @@
                 <li>**進度提示：** AI 處理時會有視覺上的進度提示和遮罩，避免等待焦慮。</li>
             </ul>
 
-            <h4>《時空學園》官方網站：</h4>
-            <p><a href="https://sites.google.com/aiv.com.tw/time-warrior-academy/" target="_blank" rel="noopener noreferrer">https://sites.google.com/aiv.com.tw/time-warrior-academy/</a></p>
-
-            <h4>《時空學園》命題設計大禮包下載：</h4>
-            <p><a href="https://reurl.cc/86Lv6j" target="_blank" rel="noopener noreferrer">https://reurl.cc/86Lv6j</a></p>
-
-            <h4>《時空學園》範例檔JSON下載：</h4>
+            <h4>《時空學園》範例JSON檔下載：</h4>
             <a href="file/時空學園命題範例_韓國部隊鍋(命題：蘇健倫老師).json" download>時空學園命題範例_韓國部隊鍋(命題：蘇健倫老師).json</a></p>
 
         </div>
@@ -1968,7 +2030,7 @@
             if (finalIsOtherChecked) {
                 customOtherSubjectInputGroup.style.display = 'flex';
                 if (customOtherSubjectValues) {
-                    customOtherSubjectInput.value = customOtherOtherSubjectValues;
+                    customOtherSubjectInput.value = customOtherSubjectValues; // Changed variable name here
                 }
             } else {
                 customOtherSubjectInputGroup.style.display = 'none';
@@ -3252,7 +3314,7 @@ categoryInput.id = inputId;
                             content += `      卡片名稱: ${incCard.cardName || '無'}\r\n`;
                             content += `      學科: ${incCard.subject || '未選擇'}\r\n`;
                             content += `      圖片URL: ${incCard.imageUrl || '無'}\r\n`;
-                            content += `      類別: ${incCard.cardCategory || '未選擇'}\r\n`;
+                            content += `      類別: ${incCard.category || '未選擇'}\r\n`; // Changed from cardCategory
                             content += `      文字內容 (定義): ${incCard.textContent || '未填寫'}\r\n`;
                             content += `      外部資訊: ${incCard.externalInfo || '無'}\r\n`;
                         });
