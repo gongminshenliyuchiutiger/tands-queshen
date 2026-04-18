@@ -72,7 +72,7 @@
             background-color: transparent;
             background-image: none;
             color: var(--text-dark);
-            padding-bottom: 80px;
+            padding-bottom: 20px;
             overflow-x: hidden;
             position: relative;
             /* z-index removed from body, rely on container's z-index for content */
@@ -656,24 +656,42 @@
 
         /* 版權和吉祥物 */
         .footer {
-            position: fixed;
-            bottom: 0;
-            left: 0;
+            position: relative; /* 改為相對定位，隨著內容排列 */
+            margin-top: 50px; /* 與上方內容保持距離 */
             width: 100%;
-            height: 40px;
-            background-color: rgb(220, 230, 240);
-            color: var(--text-medium);
-            padding: 5px 20px;
+            height: auto;
+            background-color: #0d1425;
+            color: #8da0b6;
+            padding: 20px;
             text-align: center;
             font-size: 0.85em;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            justify-content: center;
             align-items: center;
-            box-shadow: 0 -1px 8px rgba(0,0,0,0.08);
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
             z-index: 1000;
+            gap: 8px;
+        }
+        .footer-fb-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: #2da0e2; /* 採用圖片中的亮藍色 */
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: opacity 0.2s ease;
+        }
+        .footer-fb-link:hover {
+            opacity: 0.8;
+        }
+        .footer-fb-link i {
+            font-size: 1.25em;
         }
         .footer span {
-            color: var(--text-medium);
+            color: #8da0b6; /* 採用圖片中的淺灰色 */
+            letter-spacing: 0.5px;
         }
 
 
@@ -1224,21 +1242,18 @@
 
             .footer {
                 height: auto;
-                padding: 8px 10px;
+                padding: 12px 10px;
                 flex-direction: column;
                 font-size: 0.8em;
+                gap: 6px;
             }
-            .footer .left-content, .footer .right-content {
-                flex-basis: auto;
+            /* 移除原本的 flex 控制，改為統一置中 */
+            .footer .left-content, .footer .right-content, .footer .center-content {
+                order: unset;
+                margin-bottom: 0;
                 width: 100%;
                 text-align: center;
             }
-            .footer .center-content {
-                order: 1;
-                margin-bottom: 5px;
-            }
-            .footer .left-content { order: 2; }
-            .footer .right-content { order: 3; }
 
             .mascot-wrapper {
                 left: 10px;
@@ -1652,11 +1667,13 @@
     </div>
 
     <footer class="footer">
-        <div class="left-content"></div>
+        <a href="https://www.facebook.com/happyliyuchilltiger/" target="_blank" rel="noopener noreferrer" class="footer-fb-link">
+            <i class="fab fa-facebook"></i>
+            <span>快樂鯉魚秋老虎</span>
+        </a>
         <div class="center-content">
             <span>Copyright © Liyuchiutiger Gongminshen</span>
         </div>
-        <div class="right-content"></div>
     </footer>
 
     <!-- API Key Tutorial Modal -->
