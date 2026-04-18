@@ -604,6 +604,45 @@
             border-bottom-color: var(--primary-ui-blue);
         }
 
+        /* 自檢清單樣式 */
+        .checklist-container {
+            background-color: rgba(var(--accent-teal-rgb), 0.05);
+            border: 1px solid var(--accent-teal);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 25px;
+            box-shadow: 0 0 8px rgba(0, 170, 170, 0.1);
+        }
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+        .checklist-item:hover {
+            color: var(--primary-ui-blue);
+        }
+        .checklist-item input[type="checkbox"] {
+            margin-right: 12px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        .checklist-item.checked {
+            text-decoration: line-through;
+            color: var(--accent-gray);
+        }
+        
+        /* 統計字數警告色 */
+        .word-count.warning {
+            color: var(--ui-error-red);
+            font-weight: bold;
+        }
+        .word-count.success {
+            color: var(--ui-success-green);
+        }
+
         .summary-content pre {
             background-color: rgb(248, 252, 255);
             border: 1px solid var(--border-light);
@@ -1357,7 +1396,14 @@
             </div>
 
             <div class="form-group">
-                <label for="curriculumGuidelines"><i class="fas fa-scroll"></i> 4. 課綱 (Curriculum Guidelines)</label>
+                <label for="curriculumGuidelines">
+                    <i class="fas fa-scroll"></i> 4. 課綱 (Curriculum Guidelines)
+                    <div class="label-links" style="display: inline-flex; gap: 10px; margin-left: 10px; font-weight: normal; font-size: 0.85em;">
+                        <a href="https://www.naer.edu.tw/PageSyllabus?fid=52" target="_blank" rel="noopener noreferrer" style="color: var(--primary-ui-blue); text-decoration: none;"><i class="fas fa-external-link-alt"></i> 十二年國教</a>
+                        <a href="https://globalgoals.tw/" target="_blank" rel="noopener noreferrer" style="color: var(--primary-ui-blue); text-decoration: none;"><i class="fas fa-external-link-alt"></i> SDGs</a>
+                        <a href="https://cirn.moe.edu.tw/WebContent/index.aspx?sid=11&mid=7318" target="_blank" rel="noopener noreferrer" style="color: var(--primary-ui-blue); text-decoration: none;"><i class="fas fa-external-link-alt"></i> 重大議題</a>
+                    </div>
+                </label>
                 <input type="text" id="curriculumGuidelines" value="">
             </div>
 
@@ -1407,32 +1453,49 @@
 
         <section id="part2" style="display: none;">
             <h2><i class="fas fa-file-alt"></i> Part 2: 線索文本轉換 (Source Text Transformation)</h2>
-            <p>這一階段的目標是將原始文章轉化為遊戲中會呈現給玩家的「線索文本」。我們將從原始文章中找出關鍵字詞，並將其替換為通用性的「變數」，作為玩家需要猜測的謎題。</p>
+            <p>這一階段的目標是將原始文章轉化為遊戲中會呈現給玩家的「線索文本」。我們將從原始文章中找出關鍵字詞，並將其替換為通用性的「概括詞」，作為玩家需要猜測的謎題。</p>
 
             <h3>目標</h3>
-            <p>從原始文章中找出關鍵的、需要被學習或猜測的字詞，並將其替換為通用性的「變數」。</p>
+            <p>從原始文章中找出關鍵點 (正確答案)，並將其替換為上位概念的「概括詞」(格式如 <code>$[[概括詞]]</code>)。</p>
 
             <div class="form-group">
-                <label for="originalText"><i class="fas fa-pencil-alt"></i> 1. 輸入原始線索文本 (文稿)<span class="required-star">*</span></label>
+                <label for="originalText">
+                    <i class="fas fa-pencil-alt"></i> 1. 輸入原始線索文本 (文稿)<span class="required-star">*</span>
+                    <button type="button" class="ai-button inline-small" id="aiGenerateContentAndTitle" title="AI 自動起草文本與名稱" disabled style="margin-left: 8px;">
+                        <i class="fas fa-magic"></i>
+                    </button>
+                </label>
+                <div style="margin-bottom: 8px;">
+                    <button type="button" class="ai-button secondary" style="padding: 5px 10px; font-size: 0.8em;" onclick="insertSyntax()">
+                        <i class="fas fa-code"></i> 插入 $[[概括詞]] 語法
+                    </button>
+                    <small style="margin-left: 10px; color: var(--text-medium);">字數建議：300-500字</small>
+                </div>
                 <textarea id="originalText" placeholder="請將您預計用於題目的原始文章內容貼入此處。" required></textarea>
+                <div class="word-count" id="originalText_counter">0/500 字</div>
             </div>
 
             <div class="form-group">
-                <label for="keyphrasesInput"><i class="fas fa-search"></i> 2. 找出關鍵字詞並替換為變數<span class="required-star">*</span></label>
-                <textarea id="keyphrasesInput" placeholder="每行輸入一個關鍵詞，例如：&#10;韓戰&#10;美國&#10;家喻戶曉&#10;鈉" rows="5" required></textarea>
+                <label for="keyphrasesInput"><i class="fas fa-search"></i> 2. 找出關鍵字詞 (正確答案)<span class="required-star">*</span></label>
+                <p style="font-size: 0.85em; color: var(--text-medium); margin-top: -5px;">關鍵字建議 3-4 個，每行輸入一個。</p>
+                <textarea id="keyphrasesInput" placeholder="例如：&#10;韓戰&#10;美國&#10;家喻戶曉&#10;鈉" rows="5" required></textarea>
                 <div class="word-count" id="keyphrasesInput_counter">0/無限制 字</div>
-                <button type="button" id="generateKeyphraseCategories" disabled><i class="fas fa-cogs"></i> 確認關鍵詞並定義類別</button>
+                <div class="button-group-vertical" style="display: flex; flex-direction: column; gap: 12px; margin-top: 15px; width: 100%;">
+                    <button type="button" id="generateKeyphraseCategories" style="width: 100%; justify-content: center; margin: 0; padding: 12px;" disabled>
+                        <i class="fas fa-cogs"></i> 確認關鍵詞並定義概括詞
+                    </button>
+                </div>
             </div>
 
             <div id="keyphraseCategorySection" style="display: none;">
-                <h3><i class="fas fa-tag"></i> 3. 定義關鍵詞的「類別」變數</h3>
-                <p>為每個選出的關鍵詞定義一個通用性的「類別」變數。這將用於生成<code>$[[某類]]</code>的格式。</p>
+                <h3><i class="fas fa-tag"></i> 3. 定義關鍵詞的「概括詞」(上位詞)</h3>
+                <p>為每個正確答案定義一個通用性的「概括詞」。這將用於生成線索文本中的謎題區域。</p>
                 <div class="table-wrapper">
                     <table id="keyphraseCategoryTable">
                         <thead>
                             <tr>
-                                <th>關鍵詞</th>
-                                <th>變數類別 (例如：某場戰役)<span class="required-star">*</span></th>
+                                <th>正確答案</th>
+                                <th>概括詞 (例如：某場戰役)<span class="required-star">*</span></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1440,7 +1503,7 @@
                         </tbody>
                     </table>
                 </div>
-                <button type="button" id="generateClueText" disabled><i class="fas fa-magic"></i> 生成線索文本預覽</button>
+                <button type="button" id="generateClueText" disabled><i class="fas fa-magic"></i> 生成線索文本與自動替換</button>
             </div>
 
             <div id="clueTextPreviewSection" style="display: none;">
@@ -1526,6 +1589,37 @@
 
             <h3><i class="fas fa-clipboard-check"></i> 審閱與匯出您的命題</h3>
             <p>請在這裡審閱您所設計的題目內容。您可以檢查所有欄位是否都已正確填寫，提示的層次是否合理，以及知識卡是否有效。</p>
+
+            <div class="checklist-container">
+                <h3><i class="fas fa-clipboard-check"></i> 命題實戰自檢清單 (7 點核對)</h3>
+                <p>在匯出資料前，請確認您的命題是否符合以下指引要求：</p>
+                <div id="selfCheckList">
+                    <label class="checklist-item">
+                        <input type="checkbox" data-index="0" id="check_0"> 1. 目標答案 (正確答案) 數量是否在 3-4 個？
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" data-index="1" id="check_1"> 2. 線索文本是否約 300-500 字，且順暢地嵌入了關鍵詞？
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" data-index="2" id="check_2"> 3. 概括詞 (上位詞) 是否具備通用性 (例如：以「某戰役」代替「韓戰」)？
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" data-index="3" id="check_3"> 4. 三層次提示是否符合字數限制 (12/25/25字) 且邏輯由具體到抽象？
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" data-index="4" id="check_4"> 5. 誘答選項 (錯誤知識卡) 是否每組 3 個，且與概括詞屬性一致？
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" data-index="5" id="check_5"> 6. 解答說明是否充足 (> 80 字)，且解釋了推理脈絡？
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" data-index="6" id="check_6"> 7. 整體任務是否符合素養導向 (情境化、層次化、遊戲化)？
+                    </label>
+                    <label class="checklist-item" id="imageRequirementItem">
+                        <input type="checkbox" data-index="7" id="check_7"> 8. 圖卡規定：至少需一半（50%）以上卡片搭配圖卡
+                    </label>
+                </div>
+            </div>
 
             <div class="summary-section">
                 <h3><i class="fas fa-file-alt"></i> 命題資料總覽</h3>
@@ -1665,7 +1759,13 @@
     <!-- FileSaver.js for saving files -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script>
-        const missionData = {}; // 全局數據對象
+        const missionData = {
+            part1: {},
+            part2: {},
+            part3: {},
+            part4: {},
+            part5: {}
+        }; // 全局數據對象
         let keyphrases = []; // 用於存儲 Part 2 提取的關鍵詞和類別 [{original: "...", category: "...", color: "..."}]
 
         // 所有學科選項
@@ -1677,6 +1777,34 @@
             'var(--answer-blue)', 
             'var(--answer-purple)'
         ];
+
+        // 新增：快捷插入語法
+        function insertSyntax() {
+            const textarea = document.getElementById('originalText');
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const text = textarea.value;
+            const before = text.substring(0, start);
+            const after = text.substring(end, text.length);
+            const selection = text.substring(start, end) || '概括詞';
+            textarea.value = before + '$[[' + selection + ']]' + after;
+            textarea.focus();
+            textarea.selectionStart = start + 3;
+            textarea.selectionEnd = start + 3 + selection.length;
+            updateOriginalTextCounter();
+        }
+
+        function updateOriginalTextCounter() {
+            const textarea = document.getElementById('originalText');
+            const counter = document.getElementById('originalText_counter');
+            const len = textarea.value.length;
+            counter.textContent = `${len}/500 字`;
+            if (len > 500) {
+                counter.classList.add('warning');
+            } else {
+                counter.classList.remove('warning');
+            }
+        }
 
         // API Key related
         const apiKeyInput = document.getElementById('user-api-key');
@@ -1698,7 +1826,7 @@
         });
 
         // Gemini API Constants - ONLY TEXT GENERATION
-        const GEMINI_API_URL_TEXT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
+        const GEMINI_API_URL_TEXT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent';
         const MAX_RETRIES = 3;
         const INITIAL_BACKOFF = 1500; // 1.5 seconds
 
@@ -1778,20 +1906,40 @@
             const counter = document.getElementById(counterId);
 
             function updateCounter() {
-                if (!textarea || !counter) return; // Add null check for robustness
+                if (!textarea || !counter) return; 
                 const currentLength = textarea.value.length;
-                counter.textContent = `${currentLength}/${limit === -1 ? '無限制' : limit} 字`;
-                if (limit !== -1 && currentLength > limit) {
-                    counter.style.color = 'var(--ui-error-red)';
+                
+                if (limit < 0) {
+                    // 下限限制 (例如 -80 代表最少 80 字)
+                    const minLimit = Math.abs(limit);
+                    counter.textContent = `${currentLength}/${minLimit}+ 字`;
+                    if (currentLength < minLimit) {
+                        counter.classList.add('warning');
+                        counter.classList.remove('success');
+                    } else {
+                        counter.classList.remove('warning');
+                        counter.classList.add('success');
+                    }
+                } else if (limit > 0) {
+                    // 上限限制
+                    counter.textContent = `${currentLength}/${limit} 字`;
+                    if (currentLength > limit) {
+                        counter.classList.add('warning');
+                        counter.classList.remove('success');
+                    } else {
+                        counter.classList.remove('warning');
+                        counter.classList.add('success');
+                    }
                 } else {
-                    counter.style.color = 'var(--text-medium)';
+                    counter.textContent = `${currentLength}/無限制 字`;
+                    counter.classList.remove('warning', 'success');
                 }
                 checkAllCompletionStates();
             }
 
             if (textarea && counter) {
                 textarea.addEventListener('input', updateCounter);
-                updateCounter(); // 初始化時更新一次
+                updateCounter(); 
             }
         }
 
@@ -1863,6 +2011,15 @@
             }
             // 顯示目標 Part
             toggleSection(`part${partNum}`, true);
+
+            if (partNum === 3) generatePart3Forms();
+            if (partNum === 4) generatePart4Forms();
+            if (partNum === 5) {
+                if (typeof autoUpdateSelfCheckList === 'function') {
+                    autoUpdateSelfCheckList();
+                }
+                checkPart4Completion();
+            }
 
             // 當返回時，或首次進入時，根據 missionData 重新渲染動態表單
             initializeAriaAttributes(); // Always re-initialize ARIA when switching parts
@@ -2172,7 +2329,63 @@
             return (originalTextFilled && keyphrasesFilled);
         }
         originalTextarea.addEventListener('input', checkGenerateKeyphraseCategoriesBtn);
-        keyphrasesTextarea.addEventListener('input', checkGenerateKeyphraseCategoriesBtn);
+        keyphrasesTextarea.addEventListener('input', () => {
+            checkGenerateKeyphraseCategoriesBtn();
+            const keyphrasesCount = keyphrasesTextarea.value.split('\n').map(s => s.trim()).filter(s => s.length > 0).length;
+            document.getElementById('aiGenerateContentAndTitle').disabled = keyphrasesCount < 1 || !currentApiKey;
+        });
+
+        document.getElementById('aiGenerateContentAndTitle').addEventListener('click', async () => {
+            const btn = document.getElementById('aiGenerateContentAndTitle');
+            const keyphrasesInputText = keyphrasesTextarea.value.trim();
+            if (!keyphrasesInputText) return;
+
+            btn.disabled = true;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `<span class="loading-spinner"></span> 正在起草中...`;
+
+            try {
+                const prompt = `您是一位專業的命題設計專家。請根據以下正確答案關鍵詞，為《時空學園》遊戲生成一個吸引人的「任務名稱」和一段「原始線索文本」：
+正確答案關鍵詞：
+${keyphrasesInputText}
+
+要求：
+1. 【任務名稱】：5-15 字，具備冒險感與學科相關性。
+2. 【原始線索文本】：300-500 字，必須自然地融入以上所有關鍵詞。內容需具備故事性或專業情境。
+3. 請以繁體中文且 JSON 格式回傳：
+{
+  "missionTitle": "...",
+  "originalText": "..."
+}`;
+
+                const payload = {
+                    contents: [{ parts: [{ text: prompt }] }],
+                    generationConfig: { responseMimeType: "application/json" }
+                };
+
+                const result = await fetchWithGeminiRetry(GEMINI_API_URL_TEXT, payload);
+                const jsonText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                if (jsonText) {
+                    const data = JSON.parse(jsonText);
+                    if (data.missionTitle) {
+                        missionTitleInput.value = data.missionTitle;
+                        missionTitleInput.dispatchEvent(new Event('input'));
+                    }
+                    if (data.originalText) {
+                        originalTextarea.value = data.originalText;
+                        originalTextarea.dispatchEvent(new Event('input'));
+                    }
+                    showToast('AI 已成功為您起草任務名稱與文本初稿！', 'success');
+                }
+            } catch (error) {
+                showToast(`AI 起草失敗: ${error.message}`, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+                checkGenerateKeyphraseCategoriesBtn();
+            }
+        });
 
         document.getElementById('generateKeyphraseCategories').addEventListener('click', () => {
             if (!checkGenerateKeyphraseCategoriesBtn()) {
@@ -2213,7 +2426,7 @@
                 const inputId = `keyphrase_category_input_${idx}`;
                 const categoryInput = document.createElement('input');
                 categoryInput.type = 'text';
-categoryInput.id = inputId;
+                categoryInput.id = inputId;
                 categoryInput.value = kp.category || '';
                 categoryInput.placeholder = '請定義變數類別*';
                 categoryInput.required = true;
@@ -2224,12 +2437,10 @@ categoryInput.id = inputId;
                 categoryInput.dataset.originalIndex = idx;
                 categoryInput.setAttribute('aria-required', 'true');
 
-                categoryInput.addEventListener('input', (event) => {
-                    const updatedIndex = parseInt(event.target.dataset.originalIndex, 10);
-                    if (!isNaN(updatedIndex) && keyphrases[updatedIndex]) {
-                        keyphrases[updatedIndex].category = event.target.value.trim();
-                    }
+                categoryInput.addEventListener('input', () => {
+                    kp.category = categoryInput.value.trim();
                     checkGenerateClueTextBtn();
+                    checkAllCompletionStates();
                 });
                 cell2.appendChild(categoryInput);
             });
@@ -2237,39 +2448,36 @@ categoryInput.id = inputId;
             missionData.part2 = { ...missionData.part2, keyphrases: keyphrases.map(kp => ({ original: kp.original, category: kp.category, color: kp.color })) };
 
             toggleSection('keyphraseCategorySection', true);
-            initializeAriaAttributes(); // Re-initialize ARIA for newly generated inputs
             checkGenerateClueTextBtn();
+            initializeAriaAttributes(); // Re-initialize ARIA for newly generated inputs
         });
 
         function checkGenerateClueTextBtn() {
-            let allCategoriesDefined = true;
-            if (keyphrases.length === 0) {
-                allCategoriesDefined = false;
-            } else {
-                keyphrases.forEach((kp, idx) => {
-                    const inputElem = document.getElementById(`keyphrase_category_input_${idx}`);
-                    const isDefined = inputElem && inputElem.value.trim().length > 0;
-                    if (!isDefined) {
-                        allCategoriesDefined = false;
-                        if (inputElem) inputElem.style.borderColor = 'var(--ui-error-red)';
-                    } else {
-                        if (inputElem) inputElem.style.borderColor = 'var(--border-light)';
-                    }
-                });
-            }
-            generateClueTextBtn.disabled = !allCategoriesDefined;
-            return allCategoriesDefined;
+            const inputs = keyphraseCategoryTableBody.querySelectorAll('input');
+            let allFilled = true;
+            inputs.forEach(input => {
+                if (!input.value.trim()) {
+                    allFilled = false;
+                    input.style.borderColor = 'var(--ui-error-red)';
+                } else {
+                    input.style.borderColor = 'var(--border-light)';
+                }
+            });
+            generateClueTextBtn.disabled = !allFilled;
+            return allFilled;
         }
 
         document.getElementById('generateClueText').addEventListener('click', () => {
             if (!checkGenerateClueTextBtn()) {
-                showToast('請為所有關鍵詞定義變數類別！', 'error');
+                showToast('請為所有關鍵詞定義概括詞！', 'error');
                 return;
             }
 
             let clueText = originalTextarea.value;
             keyphrases.forEach((kp, idx) => {
+                // 指引要求：自動尋找關鍵詞並替換為 $[[概括詞]]
                 const regex = new RegExp(kp.original.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+                // 使用 span 來高亮顯示變數，但在數據中保持原始語法
                 clueText = clueText.replace(regex, `<span class="highlight color-${idx % KEYWORD_COLORS.length}">$[[${kp.category}]]</span>`);
             });
             // Store processed HTML and raw text
@@ -2364,7 +2572,28 @@ categoryInput.id = inputId;
             showAIOverlay(knowledgeCard, `正在生成 "${kp.original}" 的提示...`);
 
             try {
-                const prompt = `請為以下關鍵詞和類別生成教育內容：\n關鍵詞: ${kp.original}\n變數類別: ${kp.category}\n\n請以繁體中文提供以下四項內容，並確保其長度符合要求：\n1. 最終解答說明 (Full Explanation): 詳細解釋關鍵詞。\n2. 第一層提示 (Most Direct Hint): 12字以內的直接提示。\n3. 第二層提示 (Knowledge Card Scaffold): 25字以內的背景或情境提示。\n4. 第三層提示 (Overall Scaffolding Hint): 25字以內的大方向或概括性提示。\n\n請以 JSON 格式回傳，例如：\n{\n  "explanation": "...",\n  "hint1": "...",\n  "hint2": "...",\n  "hint3": "..."\n}`;
+                const missionTitle = missionData.part1.missionTitle || '未命名任務';
+                const mainSubject = missionData.part1.mainSubject || '未指定學科';
+
+                const prompt = `您是一位專業的命題設計專家。請為以下《時空學園》任務中的關鍵詞生成「素養導向」的提示：
+任務主題：${missionTitle}
+主要學科：${mainSubject}
+正確答案：${kp.original}
+概括詞 (上位詞)：${kp.category}
+
+請嚴格遵守以下準則：
+1. 【最終解答說明】：必須 > 80 字，需詳細解釋該答案在學科背景下的推理脈絡、重要性及相關知識連結，讓學生獲得完整的學習。
+2. 【層次 1 提示 (定義語)】：嚴格少於 12 字。提供最直接、最具體的定義。
+3. 【層次 2 提示 (背景提示)】：嚴格少於 25 字。提供相關背景、發生條件或情境。
+4. 【層次 3 提示 (引導提示)】：嚴格少於 25 字。提供大方向、廣泛的概括性線索。
+
+請以繁體中文且 JSON 格式回傳，確保鍵值對名稱準確無誤：
+{
+  "explanation": "...",
+  "hint1": "...",
+  "hint2": "...",
+  "hint3": "..."
+}`;
 
                 const payload = {
                     contents: [{ parts: [{ text: prompt }] }],
@@ -2388,6 +2617,14 @@ categoryInput.id = inputId;
                     hint1Elem.value = data.hint1 || '';
                     hint2Elem.value = data.hint2 || '';
                     hint3Elem.value = data.hint3 || '';
+
+                    // 即時同步到 missionData
+                    missionData.part3[kp.original] = {
+                        explanation: explanationElem.value,
+                        hint1_textContent: hint1Elem.value,
+                        hint2_knowledgeCardScaffold: hint2Elem.value,
+                        hint3_overallScaffoldingHint: hint3Elem.value
+                    };
 
                     explanationElem.dispatchEvent(new Event('input'));
                     hint1Elem.dispatchEvent(new Event('input'));
@@ -2451,6 +2688,9 @@ categoryInput.id = inputId;
                 return;
             }
             
+            // 安全初始化
+            missionData.part3 = missionData.part3 || {};
+            
             answersAndHintsFormsContainer.innerHTML = ''; 
 
             keyphrases.forEach((kp, index) => {
@@ -2461,26 +2701,27 @@ categoryInput.id = inputId;
                     <div class="knowledge-card" id="${formId}">
                         <h3 class="color-${index % KEYWORD_COLORS.length}"><i class="fas fa-key"></i> 關鍵詞 ${index + 1}: ${kp.original}</h3>
                         <div class="form-group">
-                            <label><i class="fas fa-bullseye"></i> 1. 目標答案 (Target Answer)</label>
+                            <label><i class="fas fa-bullseye"></i> 1. 正確答案 (Correct Answer)</label>
                             <input type="text" value="${kp.original}" class="color-${index % KEYWORD_COLORS.length}" readonly>
                         </div>
                         <div class="form-group">
                             <label for="${formId}_explanation"><i class="fas fa-file-lines"></i> 2. 最終解答說明 (Full Explanation)<span class="required-star">*</span></label>
+                            <p style="font-size: 0.8em; color: var(--text-medium); margin-top: -5px;">指引要求：須大於 80 字，應包含推理與脈絡。</p>
                             <textarea id="${formId}_explanation" required>${existingData.explanation || ''}</textarea>
-                            <div class="word-count" id="${formId}_explanation_counter">0/無限制 字</div>
+                            <div class="word-count" id="${formId}_explanation_counter">0/80+ 字</div>
                         </div>
                         <div class="form-group">
-                            <label for="${formId}_hint1"><i class="fas fa-comment-dots"></i> 3. 第一層提示：文字內容 (Most Direct Hint)<span class="required-star">*</span></label>
+                            <label for="${formId}_hint1"><i class="fas fa-comment-dots"></i> 3. 層次 1 提示：客觀定義/直接定義語 (Level 1)<span class="required-star">*</span></label>
                             <textarea id="${formId}_hint1" rows="2" required>${existingData.hint1_textContent || ''}</textarea>
                             <div class="word-count" id="${formId}_hint1_counter">0/12 字</div>
                         </div>
                         <div class="form-group">
-                            <label for="${formId}_hint2"><i class="fas fa-cube"></i> 4. 第二層提示：正確知識卡鷹架提示 (Background/Contextual Hint)<span class="required-star">*</span></label>
+                            <label for="${formId}_hint2"><i class="fas fa-cube"></i> 4. 層次 2 提示：背景提供/發生條件 (Level 2)<span class="required-star">*</span></label>
                             <textarea id="${formId}_hint2" rows="2" required>${existingData.hint2_knowledgeCardScaffold || ''}</textarea>
                             <div class="word-count" id="${formId}_hint2_counter">0/25 字</div>
                         </div>
                         <div class="form-group">
-                            <label for="${formId}_hint3"><i class="fas fa-sitemap"></i> 5. 第三層提示：整體鷹架提示 (Broadest Scaffolding Hint)<span class="required-star">*</span></label>
+                            <label for="${formId}_hint3"><i class="fas fa-sitemap"></i> 5. 層次 3 提示：大方向/廣度引導提示 (Level 3)<span class="required-star">*</span></label>
                             <textarea id="${formId}_hint3" rows="2" required>${existingData.hint3_overallScaffoldingHint || ''}</textarea>
                             <div class="word-count" id="${formId}_hint3_counter">0/25 字</div>
                         </div>
@@ -2493,7 +2734,7 @@ categoryInput.id = inputId;
                 `;
                 answersAndHintsFormsContainer.insertAdjacentHTML('beforeend', formHtml);
 
-                setupWordCounter(`${formId}_explanation`, `${formId}_explanation_counter`, -1);
+                setupWordCounter(`${formId}_explanation`, `${formId}_explanation_counter`, -80);
                 setupWordCounter(`${formId}_hint1`, `${formId}_hint1_counter`, 12);
                 setupWordCounter(`${formId}_hint2`, `${formId}_hint2_counter`, 25);
                 setupWordCounter(`${formId}_hint3`, `${formId}_hint3_counter`, 25);
@@ -2532,24 +2773,28 @@ categoryInput.id = inputId;
                 const isHint1 = textarea.id.includes('_hint1');
                 const isHint2 = textarea.id.includes('_hint2');
                 const isHint3 = textarea.id.includes('_hint3');
+                const isExplanation = textarea.id.includes('_explanation');
 
                 let limit = -1;
+                let minLimit = -1;
                 if (isHint1) limit = 12;
                 else if (isHint2 || isHint3) limit = 25;
+                else if (isExplanation) minLimit = 80;
                 
                 const isFilled = textarea.value.trim().length > 0;
                 const withinLimit = (limit === -1 || textarea.value.length <= limit);
+                const meetMinLimit = (minLimit === -1 || textarea.value.length >= minLimit);
 
                 const counterId = textarea.id + '_counter';
                 const counter = document.getElementById(counterId);
 
-                if (!isFilled || !withinLimit) {
+                if (!isFilled || !withinLimit || !meetMinLimit) {
                     allFormsFilledAndValid = false;
                     textarea.style.borderColor = 'var(--ui-error-red)';
                     if (counter) counter.style.color = 'var(--ui-error-red)';
                 } else {
                     textarea.style.borderColor = 'var(--border-light)';
-                    if (counter) counter.style.color = 'var(--text-medium)';
+                    if (counter) counter.style.color = 'var(--ui-success-green)';
                 }
             });
             
@@ -2675,14 +2920,16 @@ categoryInput.id = inputId;
             showAIOverlay(incorrectCardWrapper, `AI 正在生成「${incorrectCardName}」的文字內容...`);
         
             try {
-                const subject = missionData.part1.mainSubject; 
+                const missionTitle = missionData.part1.missionTitle || '未命名任務';
+                const subject = missionData.part1.mainSubject || '未指定學科'; 
         
                 // --- MODIFIED AI PROMPT ---
                 // Focus ONLY on defining the incorrect card name itself.
                 // Removed references to "correct concept" in the instruction part to avoid misleading definitions.
-                const prompt = `請為以下錯誤知識卡名稱生成一個精簡的「文字內容定義」：
-錯誤卡片名稱: ${incorrectCardName}
-所屬學科: ${subject}
+                const prompt = `您是一位專業的命題設計專家。請為以下《時空學園》任務中的錯誤知識卡生成定義：
+任務主題：${missionTitle}
+錯誤卡片名稱：${incorrectCardName}
+所屬學科：${subject}
 
 請提供一個繁體中文的「文字內容定義」(\`textContent\`)，長度限制在12字以內。
 這個定義必須是針對「${incorrectCardName}」這個錯誤卡片名稱本身的**客觀定義或簡要描述**。
@@ -2739,6 +2986,10 @@ categoryInput.id = inputId;
                 checkAllCompletionStates();
                 return;
             }
+
+            // 安全初始化
+            missionData.part3 = missionData.part3 || {};
+            missionData.part4 = missionData.part4 || {};
 
             knowledgeCardSetsContainer.innerHTML = ''; 
             const availableSubjects = getAvailableSubjectsForCards();
@@ -2817,7 +3068,12 @@ categoryInput.id = inputId;
                         </div>
 
                         <div class="incorrect-cards-group">
-                            <h4><i class="fas fa-times-circle"></i> 錯誤知識卡 (3張)</h4>
+                            <div class="label-with-ai-button">
+                                <h4><i class="fas fa-times-circle"></i> 錯誤知識卡 (3張)</h4>
+                                <button type="button" class="ai-button inline-small" id="ai_generate_set_${index}" title="AI 生成全組錯誤卡名稱與定義" ${!currentApiKey ? 'disabled' : ''}>
+                                    <i class="fas fa-wand-sparkles"></i>
+                                </button>
+                            </div>
                             <p>請為每個關鍵詞設計三張具有迷惑性，但與正確答案相關的錯誤知識卡。</p>
                             <div id="incorrect_cards_${index}_container">
                                 <!-- 錯誤知識卡將動態添加於此 -->
@@ -2833,6 +3089,20 @@ categoryInput.id = inputId;
                 for (let i = 0; i < 3; i++) {
                     addIncorrectCard(kp.original, index, i, existingIncorrectCards[i] || {}, categoryOptions);
                 }
+
+                // 新增：全組 AI 生成監聽
+                const generateSetBtn = document.getElementById(`ai_generate_set_${index}`);
+                if (generateSetBtn) {
+                    generateSetBtn.addEventListener('click', () => {
+                        generateWholeIncorrectSetAI(kp.original, index);
+                    });
+                }
+
+                // 實作類別自動同步
+                const correctCategorySelect = document.getElementById(`correct_card_${index}_category`);
+                correctCategorySelect.addEventListener('change', () => {
+                    syncCategoryInSet(index, correctCategorySelect.value);
+                });
             });
 
             knowledgeCardSetsContainer.addEventListener('input', checkPart4Completion);
@@ -2924,7 +3194,100 @@ categoryInput.id = inputId;
                 });
                 updateIndividualAiButtonState();
             }
+
+            // 錯誤卡類別同步連動
+            const categorySelect = document.getElementById(`${cardId}_category`);
+            if (categorySelect) {
+                categorySelect.addEventListener('change', () => {
+                    syncCategoryInSet(keyphraseIndex, categorySelect.value);
+                });
+            }
+
             checkAllCompletionStates();
+        }
+
+        // NEW: 全組 AI 生成錯誤卡
+        async function generateWholeIncorrectSetAI(keyphrase, kpIndex) {
+            const container = document.getElementById(`knowledge_card_set_${kpIndex}`);
+            const btn = document.getElementById(`ai_generate_set_${kpIndex}`);
+            if (!container || !btn) return;
+
+            showAIOverlay(container, `正在為「${keyphrase}」構思全組錯誤卡...`);
+            btn.disabled = true;
+
+            try {
+                // Get part 3 data for context
+                const part3Data = missionData.part3[keyphrase] || {};
+                const hint1 = part3Data.hint1_textContent || "";
+                
+                const prompt = `您是一位專業的命題設計專家。請為關鍵詞「${keyphrase}」生成 3 張具備迷惑性的「錯誤知識卡」。
+正確答案是「${keyphrase}」，類別是「${keyphrases[kpIndex].category}」。
+參考提示：${hint1}
+
+要求：
+1. 生成 3 個錯誤選項名稱。名稱必須是客觀的名詞或概念（同一範疇內的不同事物）。
+2. 為每個選項撰寫 12 字以內的客觀定義。
+3. 請以繁體中文且 JSON 格式回傳：
+{
+  "cards": [
+    {"name": "...", "content": "..."},
+    {"name": "...", "content": "..."},
+    {"name": "...", "content": "..."}
+  ]
+}`;
+
+                const payload = {
+                    contents: [{ parts: [{ text: prompt }] }],
+                    generationConfig: { responseMimeType: "application/json" }
+                };
+
+                const result = await fetchWithGeminiRetry(GEMINI_API_URL_TEXT, payload);
+                const jsonText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                if (jsonText) {
+                    const data = JSON.parse(jsonText);
+                    const cards = data.cards || [];
+                    
+                    cards.forEach((card, i) => {
+                        if (i < 3) {
+                            const nameInput = document.getElementById(`incorrect_card_${kpIndex}_${i}_name`);
+                            const textContentInput = document.getElementById(`incorrect_card_${kpIndex}_${i}_textcontent`);
+                            if (nameInput && card.name) {
+                                nameInput.value = card.name;
+                                nameInput.dispatchEvent(new Event('input'));
+                            }
+                            if (textContentInput && card.content) {
+                                textContentInput.value = card.content;
+                                textContentInput.dispatchEvent(new Event('input'));
+                            }
+                        }
+                    });
+                    showToast(`已為「${keyphrase}」成功生成全組錯誤卡內容！`, 'success');
+                }
+            } catch (error) {
+                showToast(`生成全組錯誤卡失敗: ${error.message}`, 'error');
+            } finally {
+                hideAIOverlay(container);
+                btn.disabled = false;
+                checkPart4Completion();
+            }
+        }
+
+        // 輔助函數：同步整組卡片的類別
+        function syncCategoryInSet(kpIndex, newValue) {
+            // 同步正確卡
+            const correctSelect = document.getElementById(`correct_card_${kpIndex}_category`);
+            if (correctSelect && correctSelect.value !== newValue) {
+                correctSelect.value = newValue;
+            }
+            // 同步三張錯誤卡
+            for (let i = 0; i < 3; i++) {
+                const incSelect = document.getElementById(`incorrect_card_${kpIndex}_${i}_category`);
+                if (incSelect && incSelect.value !== newValue) {
+                    incSelect.value = newValue;
+                }
+            }
+            checkPart4Completion();
         }
 
 
@@ -3050,6 +3413,91 @@ categoryInput.id = inputId;
             return allFilled;
         }
 
+        function autoUpdateSelfCheckList() {
+            const data = {
+                part1: missionData.part1 || {},
+                part2: missionData.part2 || {},
+                part3: missionData.part3 || {},
+                part4: missionData.part4 || {}
+            };
+
+            // 1. 正確答案數 (3-4)
+            const kpCount = (data.part2.keyphrases || []).length;
+            const check0 = document.getElementById('check_0');
+            if (check0) check0.checked = (kpCount >= 3 && kpCount <= 4);
+
+            // 2. 線索文本字數 (300-500)
+            const sourceText = data.part2.originalText || "";
+            const check1 = document.getElementById('check_1');
+            if (check1) check1.checked = (sourceText.length >= 300 && sourceText.length <= 500);
+
+            // 3. 概括詞語法 ($[[...]])
+            const clueHtml = data.part2.clueTextHtml || "";
+            const hasBrackets = clueHtml.includes('$[[');
+            const check2 = document.getElementById('check_2');
+            if (check2) check2.checked = hasBrackets;
+
+            // 4. 三層次提示字數
+            let hintsValid = true;
+            if (kpCount === 0) hintsValid = false;
+            for (const kp in data.part3) {
+                const h = data.part3[kp];
+                if (!h.hint1_textContent || h.hint1_textContent.length > 12) hintsValid = false;
+                if (!h.hint2_knowledgeCardScaffold || h.hint2_knowledgeCardScaffold.length > 25) hintsValid = false;
+                if (!h.hint3_overallScaffoldingHint || h.hint3_overallScaffoldingHint.length > 25) hintsValid = false;
+            }
+            const check3 = document.getElementById('check_3');
+            if (check3) check3.checked = hintsValid;
+
+            // 5. 錯誤卡一致性
+            let incorrectValid = true;
+            if (kpCount === 0) incorrectValid = false;
+            for (const kp in data.part4) {
+                if ((data.part4[kp].incorrectCards || []).length !== 3) incorrectValid = false;
+            }
+            const check4 = document.getElementById('check_4');
+            if (check4) check4.checked = incorrectValid;
+
+            // 6. 解答說明字數 (> 80)
+            let explanationValid = true;
+            if (kpCount === 0) explanationValid = false;
+            for (const kp in data.part3) {
+                if ((data.part3[kp].explanation || "").length < 80) explanationValid = false;
+            }
+            const check5 = document.getElementById('check_5');
+            if (check5) check5.checked = explanationValid;
+
+            // 7. 素養導向 (綜合判斷)
+            const check6 = document.getElementById('check_6');
+            if (check6) check6.checked = (kpCount >= 3 && hintsValid && explanationValid);
+
+            // 8. 圖卡規定 (>= 50%)
+            let totalCards = 0;
+            let cardsWithImages = 0;
+            for (const kp in data.part4) {
+                const set = data.part4[kp];
+                // Correct card
+                totalCards++;
+                if (set.correctCard && set.correctCard.imageUrl) cardsWithImages++;
+                // Incorrect cards
+                (set.incorrectCards || []).forEach(ic => {
+                    totalCards++;
+                    if (ic.imageUrl) cardsWithImages++;
+                });
+            }
+            const imageRatio = totalCards > 0 ? (cardsWithImages / totalCards) : 0;
+            const check7 = document.getElementById('check_7');
+            const imageItem = document.getElementById('imageRequirementItem');
+            if (check7) {
+                check7.checked = (imageRatio >= 0.5);
+                if (imageRatio < 0.5) {
+                    imageItem.style.color = 'var(--ui-error-red)';
+                } else {
+                    imageItem.style.color = 'var(--ui-success-green)';
+                }
+            }
+        }
+
         document.getElementById('proceedToPart5').addEventListener('click', () => {
             if (!checkPart4Completion()) {
                 showToast('請確保所有正確知識卡和剛好三張錯誤知識卡都已填寫完成，且文字內容符合字數限制！請檢查紅色的輸入框。', 'error');
@@ -3058,6 +3506,7 @@ categoryInput.id = inputId;
             missionData.part4 = getPart4DataFromDOM();
 
             goToPart(5);
+            autoUpdateSelfCheckList(); // 自動勾選
             checkPart4Completion(); // Update total card count for Part 5 summary
         });
 
@@ -3351,10 +3800,21 @@ categoryInput.id = inputId;
                 generateAllHintsAIButton.disabled = isGeneratingHintsAI || !currentApiKey;
             }
 
+            // 更新 Part 2 的 AI 智慧起草按鈕狀態
+            const aiDraftBtn = document.getElementById('aiGenerateContentAndTitle');
+            if (aiDraftBtn && keyphrasesTextarea) {
+                const keyphrasesCount = keyphrasesTextarea.value.split('\n').map(s => s.trim()).filter(s => s.length > 0).length;
+                aiDraftBtn.disabled = keyphrasesCount < 1 || !currentApiKey;
+            }
+
             // Ensure individual AI buttons in Part 4 are updated
             // Only re-check if Part 4 is currently visible, to avoid unnecessary DOM queries on hidden elements
             if (document.getElementById('part4').style.display === 'block') { 
                 keyphrases.forEach((kp, index) => {
+                    const generateSetBtn = document.getElementById(`ai_generate_set_${index}`);
+                    if (generateSetBtn) {
+                        generateSetBtn.disabled = !currentApiKey;
+                    }
                     for (let i = 0; i < 3; i++) {
                         const cardId = `incorrect_card_${index}_${i}`;
                         const cardNameInput = document.getElementById(`${cardId}_name`);
